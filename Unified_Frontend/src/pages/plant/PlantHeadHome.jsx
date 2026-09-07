@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import DashboardLayout from "../../partials/dashboardLayout/DashboardLayout";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
@@ -101,7 +101,7 @@ export default function PlantHeadHome() {
   // Excel Download
   const downloadExcel = () => {
     const wsData = [];
-    wsData.push(["LIL Bawal - Plant Performance Executive Report"]);
+    wsData.push(["LUMAX Bawal - Plant Performance Executive Report"]);
     wsData.push([`Production Date: ${prodDate}`]);
     wsData.push([]);
 
@@ -161,7 +161,7 @@ export default function PlantHeadHome() {
   const downloadPDF = () => {
     const doc = new jsPDF("l", "pt", "a4");
     doc.setFontSize(14);
-    doc.text("LIL Bawal - Plant Executive Performance Report", 40, 30);
+    doc.text("LUMAX Bawal - Plant Executive Performance Report", 40, 30);
     doc.setFontSize(10);
     doc.text(`Production Date: ${prodDate || "Current"}`, 40, 48);
 

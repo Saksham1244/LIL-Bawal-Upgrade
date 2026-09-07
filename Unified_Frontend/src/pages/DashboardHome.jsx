@@ -251,7 +251,7 @@ export default function DashboardHome() {
   const handleExportPDF = () => {
     const doc = new jsPDF('l', 'pt', 'a4');
     doc.setFontSize(14);
-    doc.text('LIL Bawal - Production Overview Report', 40, 30);
+    doc.text('LUMAX Bawal - Production Overview Report', 40, 30);
     doc.setFontSize(10);
     doc.text(`Date: ${startDate} to ${endDate} | Period: ${period} ${period === 'Custom' ? `| Shift: ${shift}` : ''}`, 40, 48);
 

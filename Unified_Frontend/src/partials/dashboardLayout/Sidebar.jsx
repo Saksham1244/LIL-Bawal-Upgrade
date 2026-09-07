@@ -120,6 +120,27 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, collapsed, setCol
           (sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0")
         }
       >
+        {/* Top Brand Logo Banner */}
+        <div className="px-3.5 py-3 border-b border-[#1e293b] flex items-center gap-2.5 bg-[#080e1e]">
+          <div className="bg-white p-1 rounded-lg shrink-0 shadow-xs flex items-center justify-center">
+            <img
+              src="/lumax-logo.png"
+              alt="LUMAX"
+              className={collapsed ? "h-5 w-5 object-contain" : "h-6 w-auto object-contain"}
+            />
+          </div>
+          {!collapsed && (
+            <div className="flex flex-col min-w-0">
+              <span className="text-xs font-black tracking-wider text-white truncate">
+                LUMAX
+              </span>
+              <span className="text-[10px] text-slate-400 font-medium truncate">
+                Bawal Plant
+              </span>
+            </div>
+          )}
+        </div>
+
         {/* Search Bar (Matching Image 2 top) */}
         {!collapsed && (
           <div className="p-3 border-b border-[#1e293b]/70">

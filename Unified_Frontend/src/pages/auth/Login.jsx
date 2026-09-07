@@ -1,4 +1,4 @@
-﻿import React, { useState } from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../services/operations/authAPI";
@@ -58,24 +58,19 @@ export default function Login() {
         {/* Top Header & Logo */}
         <div className="text-center mb-8">
           {/* Corporate Brand Logo */}
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <svg
-              className="w-7 h-7 text-[#00529B]"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-            >
-              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-            </svg>
-            <span className="text-xl font-black tracking-widest text-[#00529B] font-sans">
-              BAJAJ
-            </span>
+          <div className="flex items-center justify-center mb-5">
+            <img
+              src="/lumax-logo.png"
+              alt="LUMAX"
+              className="h-14 w-auto object-contain drop-shadow-xs"
+            />
           </div>
 
           <h1 className="text-xl sm:text-2xl font-black text-slate-800 tracking-tight">
             Manufacturing Command Center
           </h1>
           <p className="text-xs text-slate-400 mt-1 font-medium">
-            Production Performance Management System (PPMS)
+            LUMAX Bawal Plant • PPMS Dashboard
           </p>
         </div>
 
@@ -145,9 +140,9 @@ export default function Login() {
         </form>
       </div>
 
-      {/* Footer Branding Text (Matching screenshot 3 bottom) */}
+      {/* Footer Branding Text */}
       <div className="relative z-10 text-center mt-6 text-[11px] text-slate-400 font-medium">
-        <span>Bajaj Auto Pantnagar Plant</span>
+        <span>LUMAX Industries • Bawal Plant</span>
         <span className="mx-1.5">•</span>
         <span>PPMS Enterprise v2.0.0</span>
       </div>

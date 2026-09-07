@@ -364,7 +364,7 @@ export default function MouldMaintenanceHistory() {
   const handleExportPDF = () => {
     const doc = new jsPDF("l", "pt", "a4");
     doc.setFontSize(14);
-    doc.text(`LIL Bawal - Mould Tooling Maintenance (${activeTab})`, 40, 30);
+    doc.text(`LUMAX Bawal - Mould Tooling Maintenance (${activeTab})`, 40, 30);
     doc.setFontSize(10);
     doc.text(`Date Range: ${startDate} to ${endDate} | Mould: ${selectedMould}`, 40, 48);
 

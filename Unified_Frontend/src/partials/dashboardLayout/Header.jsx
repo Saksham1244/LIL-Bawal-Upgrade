@@ -2,7 +2,8 @@ import axios from "axios";
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
-  MdMenu,
+  MdChevronLeft,
+  MdChevronRight,
   MdKeyboardArrowDown,
   MdLogout,
   MdPerson,
@@ -109,22 +110,30 @@ export default function Header({ sidebarOpen, setSidebarOpen, collapsed, setColl
     <header className="bg-white border-b border-slate-200/80 sticky top-0 z-30 shadow-2xs font-sans">
       <div className="px-4 lg:px-6 h-13 flex items-center justify-between gap-4">
         {/* ================================================================= */}
-        {/* LEFT: HAMBURGER TOGGLE + CLEAN BREADCRUMB (Matching Reference UI) */}
+        {/* LEFT: COLLAPSE/EXPAND TOGGLE + CLEAN BREADCRUMB (Arrow Toggle)    */}
         {/* ================================================================= */}
         <div className="flex items-center gap-3 min-w-0">
           <button
             type="button"
-            className="text-slate-500 hover:text-slate-800 p-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+            className="text-slate-500 hover:text-slate-800 p-1.5 rounded-lg hover:bg-slate-100 transition-colors border border-slate-200/60 cursor-pointer flex items-center justify-center shadow-2xs"
             onClick={() => {
               if (typeof window !== "undefined" && window.innerWidth < 1024) {
                 setSidebarOpen(!sidebarOpen);
               } else if (setCollapsed) {
-                setCollapsed(!collapsed);
+                const next = !collapsed;
+                setCollapsed(next);
+                try {
+                  localStorage.setItem("sidebar-collapsed", String(next));
+                } catch (e) {}
               }
             }}
-            title="Toggle Sidebar"
+            title={collapsed ? "Expand Sidebar" : "Collapse Sidebar"}
           >
-            <MdMenu size={20} />
+            {collapsed ? (
+              <MdChevronRight size={20} className="text-slate-600" />
+            ) : (
+              <MdChevronLeft size={20} className="text-slate-600" />
+            )}
           </button>
 
           {/* Breadcrumb Path */}
@@ -163,11 +172,21 @@ export default function Header({ sidebarOpen, setSidebarOpen, collapsed, setColl
             {currentTime || "12:00 PM"}
           </div>
 
-          {/* Plant Brand Watermark */}
-          <div className="hidden sm:flex items-center gap-1.5 border-l border-slate-200 pl-3">
-            <span className="text-[11px] font-black tracking-widest text-[#00529B] font-sans">
-              LIL BAWAL
-            </span>
+          {/* Company Brand Logo & Plant Name */}
+          <div className="hidden sm:flex items-center gap-2 border-l border-slate-200 pl-3">
+            <img
+              src="/lumax-logo.png"
+              alt="LUMAX"
+              className="h-6 w-auto object-contain"
+            />
+            <div className="flex flex-col">
+              <span className="text-[11px] font-black tracking-wider text-slate-900 leading-tight">
+                LUMAX
+              </span>
+              <span className="text-[9px] font-semibold text-slate-400 leading-tight">
+                Bawal Plant
+              </span>
+            </div>
           </div>
 
           {/* User Profile Pill & Dropdown */}
@@ -202,7 +221,7 @@ export default function Header({ sidebarOpen, setSidebarOpen, collapsed, setColl
                     Plant Administrator (ID: #1)
                   </p>
                   <span className="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded bg-sky-50 text-[9px] font-bold text-[#0284c7]">
-                    PPMS LIL Bawal • 192.168.12.6
+                    PPMS LUMAX Bawal • 192.168.12.6
                   </span>
                 </div>
 
