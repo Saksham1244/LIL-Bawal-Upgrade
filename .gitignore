@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+*/node_modules/
+
+# Build artifacts
+dist/
+build/
+*/dist/
+
+# Environment credentials & secrets
+.env
+.env.*
+*/.env
+*/.env.*
+!*.env.example
+!*/.env.example
+
+# Archives & Temporary files
+*.rar
+*.zip
+*.7z
+*.tar.gz
+*.log
+
+# Legacy Folders (Excluded)
+Lumax-Dashbaord-Backend/
+MouldMaintenanceDashboard_Backend/
+PlantHeadDashboardBackend/
+
+# OS / Editor Files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
