@@ -174,6 +174,29 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, collapsed, setCol
 
         {/* Navigation List - Module Groups */}
         <div className="flex-1 overflow-y-auto px-2 py-3 space-y-1 scrollbar-thin scrollbar-thumb-slate-800">
+          {/* MODULE 7: EXECUTIVE / PLANT HEAD */}
+          <div>
+            <button
+              type="button"
+              onClick={() => toggleSection("plant")}
+              className="w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition-colors"
+            >
+              <div className="flex items-center gap-2.5">
+                <MdFactory size={17} className="text-amber-400 shrink-0" />
+                {!collapsed && <span>Executive Cockpit</span>}
+              </div>
+              {!collapsed && (openSections.plant ? <MdExpandLess size={16} /> : <MdChevronRight size={16} />)}
+            </button>
+
+            {(!collapsed && openSections.plant) && (
+              <div className="pl-8 pr-1 py-1 space-y-0.5">
+                <NavLink to="/plant-head" className={({ isActive }) => getSubLinkClass(isActive)}>
+                  Executive Comparison
+                </NavLink>
+              </div>
+            )}
+          </div>
+
           {/* MODULE 1: PRODUCTION MANAGEMENT */}
           <div>
             <button
@@ -318,28 +341,6 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, collapsed, setCol
             )}
           </div>
 
-          {/* MODULE 7: EXECUTIVE / PLANT HEAD */}
-          <div>
-            <button
-              type="button"
-              onClick={() => toggleSection("plant")}
-              className="w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition-colors"
-            >
-              <div className="flex items-center gap-2.5">
-                <MdFactory size={17} className="text-amber-400 shrink-0" />
-                {!collapsed && <span>Executive Cockpit</span>}
-              </div>
-              {!collapsed && (openSections.plant ? <MdExpandLess size={16} /> : <MdChevronRight size={16} />)}
-            </button>
-
-            {(!collapsed && openSections.plant) && (
-              <div className="pl-8 pr-1 py-1 space-y-0.5">
-                <NavLink to="/plant-head" className={({ isActive }) => getSubLinkClass(isActive)}>
-                  Executive Comparison
-                </NavLink>
-              </div>
-            )}
-          </div>
         </div>
 
         {/* User Profile Card at Bottom (Direct Match to Image 2 bottom-left) */}
