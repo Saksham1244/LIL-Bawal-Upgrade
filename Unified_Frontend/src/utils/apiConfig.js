@@ -15,7 +15,7 @@ export const getBackendBaseUrl = () => {
 
     // 2. If running inside native Android App (Capacitor)
     if (window.Capacitor) {
-      return "http://192.168.1.14:3010/api";
+      return "https://medal-programmers-origins-ultra.trycloudflare.com/api";
     }
 
     // 3. Web Browser dynamic host resolution

@@ -52,15 +52,28 @@ export default function Login() {
     }
   };
 
+  const normalizeApiUrl = (input) => {
+    let url = (input || "").trim().replace(/\/+$/, "");
+    if (!url) return "";
+    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+      url = "https://" + url;
+    }
+    if (!url.endsWith("/api")) {
+      url += "/api";
+    }
+    return url;
+  };
+
   const testServerConnection = async (targetUrl) => {
-    const url = (targetUrl || serverUrl).replace(/\/+$/, "");
+    const raw = targetUrl !== undefined ? targetUrl : serverUrl;
+    const url = normalizeApiUrl(raw);
     setTestStatus("testing");
     setTestMsg("Testing connection...");
     try {
-      const res = await axios.get(`${url}/status`, { timeout: 4000 });
+      const res = await axios.get(`${url}/status`, { timeout: 6000 });
       if (res.status === 200) {
         setTestStatus("success");
-        setTestMsg(`Connected! Server: ${res.data?.app || "Online"}`);
+        setTestMsg(`Connected! Plant DB: ${res.data?.database?.status || "Connected"}`);
       } else {
         setTestStatus("error");
         setTestMsg(`Server returned code ${res.status}`);
@@ -72,8 +85,9 @@ export default function Login() {
   };
 
   const handleSaveSettings = () => {
-    const clean = serverUrl.replace(/\/+$/, "");
+    const clean = normalizeApiUrl(serverUrl);
     localStorage.setItem("ppms_server_api_url", clean);
+    setServerUrl(clean);
     setShowSettings(false);
   };
 
@@ -248,12 +262,12 @@ export default function Login() {
 
                 <button
                   type="button"
-                  onClick={() => selectPreset("https://satisfy-spencer-flickr-sand.trycloudflare.com/api")}
+                  onClick={() => selectPreset("https://medal-programmers-origins-ultra.trycloudflare.com/api")}
                   className="w-full text-left px-3 py-2 rounded-lg border border-slate-200 hover:border-blue-500 hover:bg-blue-50/50 transition-colors text-xs flex items-center justify-between"
                 >
                   <div>
                     <span className="font-bold text-slate-800">🌐 Cloudflare Global Tunnel</span>
-                    <p className="text-[10px] text-slate-400 font-mono">https://satisfy-spencer...trycloudflare.com</p>
+                    <p className="text-[10px] text-slate-400 font-mono">https://medal-programmers...trycloudflare.com</p>
                   </div>
                   <span className="text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded font-bold">4G/5G Worldwide</span>
                 </button>
