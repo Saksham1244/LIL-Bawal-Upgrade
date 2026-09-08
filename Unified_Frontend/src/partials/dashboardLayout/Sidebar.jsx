@@ -216,9 +216,6 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, collapsed, setCol
                 <NavLink to="/home" end className={({ isActive }) => getSubLinkClass(isActive)}>
                   Production Report
                 </NavLink>
-                <NavLink to="/performance" className={({ isActive }) => getSubLinkClass(isActive)}>
-                  Plant OEE
-                </NavLink>
               </div>
             )}
           </div>
