@@ -114,30 +114,45 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, collapsed, setCol
       {/* Sidebar container - Dark Navy (#0B132B / #0F172A) strictly matching screenshot */}
       <aside
         className={
-          "fixed top-0 left-0 z-40 h-screen flex flex-col bg-[#0b1329] border-r border-[#1e293b] text-slate-300 transition-all duration-300 ease-in-out lg:static " +
+          "fixed top-0 left-0 z-40 h-screen flex flex-col bg-[#0b1329] border-r border-[#1e293b] text-slate-300 transition-all duration-300 ease-in-out overflow-hidden lg:static " +
           (collapsed ? "w-16" : "w-64") +
           " " +
           (sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0")
         }
       >
         {/* Top Brand Logo Banner */}
-        <div className="px-3.5 py-3.5 border-b border-[#1e293b] flex items-center gap-3 bg-[#080e1e]">
-          <div className="bg-white px-2.5 py-1.5 rounded-lg shrink-0 shadow-sm flex items-center justify-center">
-            <img
-              src="/lumax-logo.png"
-              alt="LUMAX"
-              className={collapsed ? "h-6 w-auto object-contain" : "h-7 w-auto object-contain max-w-[95px]"}
-            />
-          </div>
-          {!collapsed && (
-            <div className="flex flex-col min-w-0">
-              <span className="text-xs font-black tracking-wider text-white truncate">
-                LUMAX
-              </span>
-              <span className="text-[10px] text-slate-400 font-medium truncate">
-                Bawal Plant
-              </span>
+        <div
+          className={
+            "border-b border-[#1e293b] flex items-center bg-[#080e1e] overflow-hidden transition-all duration-300 " +
+            (collapsed ? "h-14 justify-center px-2" : "h-14 px-3.5 gap-3")
+          }
+        >
+          {collapsed ? (
+            <div className="bg-white w-9 h-9 rounded-lg shadow-xs flex items-center justify-center p-1 shrink-0">
+              <img
+                src="/lumax-icon.png"
+                alt="LUMAX"
+                className="w-6 h-6 object-contain"
+              />
             </div>
+          ) : (
+            <>
+              <div className="bg-white px-2.5 py-1 rounded-lg shrink-0 shadow-xs flex items-center justify-center">
+                <img
+                  src="/lumax-logo.png"
+                  alt="LUMAX"
+                  className="h-6 w-auto object-contain max-w-[90px]"
+                />
+              </div>
+              <div className="flex flex-col min-w-0">
+                <span className="text-xs font-black tracking-wider text-white truncate">
+                  LUMAX
+                </span>
+                <span className="text-[10px] text-slate-400 font-medium truncate">
+                  Bawal Plant
+                </span>
+              </div>
+            </>
           )}
         </div>
 

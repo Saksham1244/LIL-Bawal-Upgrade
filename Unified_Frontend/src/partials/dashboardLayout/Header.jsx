@@ -108,7 +108,7 @@ export default function Header({ sidebarOpen, setSidebarOpen, collapsed, setColl
 
   return (
     <header className="bg-white border-b border-slate-200/80 sticky top-0 z-30 shadow-2xs font-sans">
-      <div className="px-4 lg:px-6 h-13 flex items-center justify-between gap-4">
+      <div className="px-4 lg:px-6 h-14 flex items-center justify-between gap-4">
         {/* ================================================================= */}
         {/* LEFT: COLLAPSE/EXPAND TOGGLE + CLEAN BREADCRUMB (Arrow Toggle)    */}
         {/* ================================================================= */}
