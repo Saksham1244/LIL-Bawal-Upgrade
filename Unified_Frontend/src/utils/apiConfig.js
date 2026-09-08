@@ -11,7 +11,13 @@ export const getBackendBaseUrl = () => {
   if (typeof window !== "undefined") {
     // 1. Check if user configured a server endpoint
     const savedUrl = localStorage.getItem("ppms_server_api_url");
-    if (savedUrl) return savedUrl.replace(/\/+$/, "");
+    if (savedUrl && !savedUrl.includes("satisfy-spencer")) {
+      return savedUrl.replace(/\/+$/, "");
+    }
+    // Clean up outdated tunnel cache
+    if (savedUrl && savedUrl.includes("satisfy-spencer")) {
+      localStorage.removeItem("ppms_server_api_url");
+    }
 
     // 2. If running inside native Android App (Capacitor)
     if (window.Capacitor) {

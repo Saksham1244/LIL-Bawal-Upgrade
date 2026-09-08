@@ -32,6 +32,14 @@ export default function Login() {
   const [testStatus, setTestStatus] = useState(null); // null | 'testing' | 'success' | 'error'
   const [testMsg, setTestMsg] = useState("");
 
+  useEffect(() => {
+    if (serverUrl && serverUrl.includes("satisfy-spencer")) {
+      const freshUrl = getBackendBaseUrl();
+      setServerUrl(freshUrl);
+      localStorage.removeItem("ppms_server_api_url");
+    }
+  }, [serverUrl]);
+
   const { username, password } = formData;
 
   const handleOnChange = (e) => {
@@ -67,20 +75,28 @@ export default function Login() {
   const testServerConnection = async (targetUrl) => {
     const raw = targetUrl !== undefined ? targetUrl : serverUrl;
     const url = normalizeApiUrl(raw);
+    if (!url) {
+      setTestStatus("error");
+      setTestMsg("Please enter a valid server URL.");
+      return;
+    }
     setTestStatus("testing");
     setTestMsg("Testing connection...");
     try {
-      const res = await axios.get(`${url}/status`, { timeout: 6000 });
+      const res = await axios.get(`${url}/status`, { timeout: 8000 });
       if (res.status === 200) {
         setTestStatus("success");
-        setTestMsg(`Connected! Plant DB: ${res.data?.database?.status || "Connected"}`);
+        const dbStatus = res.data?.database?.status || "Connected";
+        const serverName = res.data?.database?.server || "";
+        setTestMsg(`Connected! Status: 200 OK (${serverName ? `DB ${serverName} ` : ""}${dbStatus})`);
       } else {
         setTestStatus("error");
-        setTestMsg(`Server returned code ${res.status}`);
+        setTestMsg(`Server replied with status ${res.status}`);
       }
     } catch (err) {
       setTestStatus("error");
-      setTestMsg("Cannot reach server. Ensure backend is running.");
+      const errDetail = err.response ? `HTTP ${err.response.status}` : (err.code || err.message || "Network Error");
+      setTestMsg(`Connection failed (${errDetail}). Check URL or network.`);
     }
   };
 
@@ -92,8 +108,9 @@ export default function Login() {
   };
 
   const selectPreset = (url) => {
-    setServerUrl(url);
-    testServerConnection(url);
+    const clean = normalizeApiUrl(url);
+    setServerUrl(clean);
+    testServerConnection(clean);
   };
 
   return (
