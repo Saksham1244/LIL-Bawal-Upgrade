@@ -3,11 +3,9 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../services/operations/authAPI";
 import {
-  MdPersonOutline,
-  MdLockOutline,
-  MdSecurity,
   MdVisibility,
   MdVisibilityOff,
+  MdLogin,
 } from "react-icons/md";
 
 export default function Login() {
@@ -42,66 +40,52 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center relative px-4 bg-[#0c1427] font-sans overflow-hidden">
-      {/* Subtle grid background texture (Matching screenshot 3) */}
-      <div
-        className="absolute inset-0 opacity-15 pointer-events-none"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, rgba(255, 255, 255, 0.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.08) 1px, transparent 1px)",
-          backgroundSize: "48px 48px",
-        }}
-      />
-
-      {/* Floating Centered Card (Direct Match to Image 3) */}
-      <div className="relative z-10 w-full max-w-[440px] bg-white rounded-2xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] p-8 sm:p-10 border border-slate-100/60">
+    <div className="min-h-screen w-full flex flex-col items-center justify-center relative px-4 bg-[#e8effc] font-sans">
+      {/* Floating Centered Card (Matching Reference UI) */}
+      <div className="w-full max-w-[420px] bg-white rounded-2xl shadow-xl shadow-slate-200/60 p-8 sm:p-10 border border-slate-100">
         {/* Top Header & Logo */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-6">
           {/* Corporate Brand Logo */}
-          <div className="flex items-center justify-center mb-5">
+          <div className="flex items-center justify-center mb-4">
             <img
               src="/lumax-logo.png"
               alt="LUMAX"
-              className="h-14 w-auto object-contain drop-shadow-xs"
+              className="h-9 w-auto object-contain"
             />
           </div>
 
-          <h1 className="text-xl sm:text-2xl font-black text-slate-800 tracking-tight">
-            Manufacturing Command Center
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-800 tracking-tight">
+            Welcome Back
           </h1>
-          <p className="text-xs text-slate-400 mt-1 font-medium">
-            LUMAX Bawal Plant • PPMS Dashboard
+          <p className="text-xs sm:text-[13px] text-slate-400 mt-1 font-normal">
+            Sign in to PPMS Command Center
           </p>
         </div>
 
         {/* Login Form */}
         <form onSubmit={handleOnSubmit} className="space-y-4">
-          {/* Username or Email Input Field */}
+          {/* Username Input Field */}
           <div>
-            <label className="block text-[10px] font-extrabold text-slate-600 uppercase tracking-wider mb-1.5">
-              USERNAME OR EMAIL
+            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+              Username
             </label>
-            <div className="flex items-center gap-2.5 px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl focus-within:border-sky-500 focus-within:ring-2 focus-within:ring-sky-100 transition-all">
-              <MdPersonOutline size={18} className="text-slate-400 shrink-0" />
-              <input
-                type="text"
-                name="username"
-                value={username}
-                onChange={handleOnChange}
-                placeholder="Enter your username or email"
-                required
-                className="w-full text-xs text-slate-800 placeholder-slate-400 bg-transparent border-none outline-none p-0 focus:ring-0"
-              />
-            </div>
+            <input
+              type="text"
+              name="username"
+              value={username}
+              onChange={handleOnChange}
+              placeholder="Enter your username"
+              required
+              className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-lg text-xs sm:text-sm text-slate-800 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-all"
+            />
           </div>
 
           {/* Password Input Field */}
           <div>
-            <label className="block text-[10px] font-extrabold text-slate-600 uppercase tracking-wider mb-1.5">
-              PASSWORD
+            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+              Password
             </label>
-            <div className="flex items-center gap-2.5 px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl focus-within:border-sky-500 focus-within:ring-2 focus-within:ring-sky-100 transition-all">
-              <MdLockOutline size={18} className="text-slate-400 shrink-0" />
+            <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
@@ -109,12 +93,12 @@ export default function Login() {
                 onChange={handleOnChange}
                 placeholder="Enter your password"
                 required
-                className="w-full text-xs text-slate-800 placeholder-slate-400 bg-transparent border-none outline-none p-0 focus:ring-0"
+                className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-lg text-xs sm:text-sm text-slate-800 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-all pr-10"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="text-slate-400 hover:text-slate-600 focus:outline-none p-0.5"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none p-1"
                 title={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? (
@@ -130,18 +114,18 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full mt-6 py-3 px-4 bg-[#1a3353] hover:bg-[#12243b] text-white text-xs font-extrabold rounded-xl flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all disabled:opacity-70 cursor-pointer"
+            className="w-full mt-6 py-2.5 px-4 bg-[#1565c0] hover:bg-[#0d47a1] active:bg-[#0a3880] text-white text-xs sm:text-sm font-semibold rounded-lg flex items-center justify-center gap-2 shadow-sm transition-all disabled:opacity-70 cursor-pointer"
           >
-            <MdSecurity size={16} />
+            <MdLogin size={18} />
             <span>
-              {loading ? "Signing in..." : "Sign In to Command Center"}
+              {loading ? "Signing in..." : "Sign In"}
             </span>
           </button>
         </form>
       </div>
 
       {/* Footer Branding Text */}
-      <div className="relative z-10 text-center mt-6 text-[11px] text-slate-400 font-medium">
+      <div className="text-center mt-6 text-[11px] text-slate-400 font-medium">
         <span>LUMAX Industries • Bawal Plant</span>
         <span className="mx-1.5">•</span>
         <span>PPMS Enterprise v2.0.0</span>
