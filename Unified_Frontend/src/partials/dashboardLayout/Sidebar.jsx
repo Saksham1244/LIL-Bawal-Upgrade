@@ -121,12 +121,12 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, collapsed, setCol
         }
       >
         {/* Top Brand Logo Banner */}
-        <div className="px-3.5 py-3 border-b border-[#1e293b] flex items-center gap-2.5 bg-[#080e1e]">
-          <div className="bg-white p-1 rounded-lg shrink-0 shadow-xs flex items-center justify-center">
+        <div className="px-3.5 py-3.5 border-b border-[#1e293b] flex items-center gap-3 bg-[#080e1e]">
+          <div className="bg-white px-2.5 py-1.5 rounded-lg shrink-0 shadow-sm flex items-center justify-center">
             <img
               src="/lumax-logo.png"
               alt="LUMAX"
-              className={collapsed ? "h-5 w-5 object-contain" : "h-6 w-auto object-contain"}
+              className={collapsed ? "h-6 w-auto object-contain" : "h-7 w-auto object-contain max-w-[95px]"}
             />
           </div>
           {!collapsed && (

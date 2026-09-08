@@ -173,11 +173,11 @@ export default function Header({ sidebarOpen, setSidebarOpen, collapsed, setColl
           </div>
 
           {/* Company Brand Logo & Plant Name */}
-          <div className="hidden sm:flex items-center gap-2 border-l border-slate-200 pl-3">
+          <div className="hidden sm:flex items-center gap-2.5 border-l border-slate-200 pl-3">
             <img
               src="/lumax-logo.png"
               alt="LUMAX"
-              className="h-6 w-auto object-contain"
+              className="h-7 w-auto object-contain max-w-[90px]"
             />
             <div className="flex flex-col">
               <span className="text-[11px] font-black tracking-wider text-slate-900 leading-tight">
