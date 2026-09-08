@@ -175,6 +175,27 @@ export default function Login() {
               {loading ? "Signing in..." : "Sign In"}
             </span>
           </button>
+
+          {/* Server Connection Bar (Prominently inside card) */}
+          <div className="pt-3 border-t border-slate-100 mt-4 flex items-center justify-between text-[11px]">
+            <div className="flex items-center gap-1.5 min-w-0 pr-2">
+              <span className="w-2 h-2 rounded-full bg-blue-500 shrink-0"></span>
+              <span className="truncate text-slate-500 font-mono text-[10px]">
+                {serverUrl.replace(/^https?:\/\//, "")}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setShowSettings(true);
+                testServerConnection(serverUrl);
+              }}
+              className="text-blue-600 hover:text-blue-800 font-bold flex items-center gap-1 hover:underline cursor-pointer shrink-0 text-xs"
+            >
+              <MdSettings size={14} />
+              <span>Change Server</span>
+            </button>
+          </div>
         </form>
       </div>
 
