@@ -1,3 +1,4 @@
+import { getBackendBaseUrl } from "../../../utils/apiConfig";
 ﻿import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import {
@@ -14,7 +15,7 @@ import axios from "axios";
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const TopFiveAlarmsDurationChart = ({ mode = "DAY", startDate, endDate }) => {
-  const BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL;
+const BASE_URL = getBackendBaseUrl();
   const [chartData, setChartData] = useState({ labels: [], data: [] });
   const [loading, setLoading] = useState(false);
 

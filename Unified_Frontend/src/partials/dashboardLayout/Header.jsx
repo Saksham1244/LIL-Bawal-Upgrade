@@ -1,3 +1,4 @@
+import { getBackendBaseUrl } from "../../utils/apiConfig";
 import axios from "axios";
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -22,7 +23,7 @@ export default function Header({ sidebarOpen, setSidebarOpen, collapsed, setColl
   const [liveShift, setLiveShift] = useState(getShiftCode());
   const dropdownRef = useRef(null);
 
-  const BASE_URL = (import.meta.env.VITE_BACKEND_BASE_URL || "").replace(/\/+$/, "");
+const BASE_URL = getBackendBaseUrl();
 
   useEffect(() => {
     const fetchLiveShift = async () => {

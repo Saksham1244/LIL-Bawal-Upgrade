@@ -1,3 +1,4 @@
+import { getBackendBaseUrl } from "../../../utils/apiConfig";
 // src/pages/BreakDownHistory.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -73,7 +74,7 @@ const BreakDownHistory = () => {
   };
 
   // ---------------- API Endpoints ----------------
-  const BASE = (import.meta.env.VITE_BACKEND_BASE_URL || "http://192.168.1.10:3004/api").replace(/\/+$/, "");
+const BASE = getBackendBaseUrl();
   const BREAKDOWN_DURATION_ENDPOINT = `${BASE}/MouldMaintenanceHistoryBreakdownCalDetails/BreakdownDuration`;
   const BREAKDOWN_COUNT_ENDPOINT = `${BASE}/MouldMaintenanceHistoryBreakdownCalDetails/BreakdownCount`;
   const BREAKDOWN_CALC_ENDPOINT = `${BASE}/MouldMaintenanceHistoryBreakdownCalDetails/BreakdownCalculatedDetails`;

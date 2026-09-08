@@ -1,3 +1,4 @@
+import { getBackendBaseUrl } from "../../utils/apiConfig";
 import React, { useState, useEffect, useRef } from "react";
 import DashboardLayout from "../../partials/dashboardLayout/DashboardLayout";
 import * as XLSX from "xlsx";
@@ -12,7 +13,7 @@ import {
   MdCheckCircle,
 } from "react-icons/md";
 
-const BASE = (import.meta.env.VITE_BACKEND_BASE_URL || "").replace(/\/+$/, "");
+const BASE = getBackendBaseUrl();
 
 export default function PlantHeadHome() {
   const [filterType, setFilterType] = useState("Current");

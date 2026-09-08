@@ -1,3 +1,4 @@
+import { getBackendBaseUrl } from "../../../utils/apiConfig";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../../../partials/DashboardLayout.jsx";
@@ -15,7 +16,7 @@ import {
 import axios from "axios";
 
 // normalize BASE (remove trailing slash)
-const BASE = (import.meta.env.VITE_BACKEND_BASE_URL || "").replace(/\/+$/, "");
+const BASE = getBackendBaseUrl();
 
 export default function SparePartUI() {
   const navigate = useNavigate();

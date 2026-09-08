@@ -1,3 +1,4 @@
+import { getBackendBaseUrl } from "../../utils/apiConfig";
 // src/pages/MouldSummary.jsx
 import React, { useState, useEffect } from "react";
 import DashboardLayout from "../../partials/dashboardLayout/DashboardLayout";
@@ -16,7 +17,7 @@ import {
 } from "recharts";
 import Select from "react-select";
 // normalize BASE (remove trailing slash)
-const BASE = (import.meta.env.VITE_BACKEND_BASE_URL || "").replace(/\/+$/, "");
+const BASE = getBackendBaseUrl();
 
 const MouldSummary = () => {
   // ---------------- DROPDOWN + API STATE ----------------

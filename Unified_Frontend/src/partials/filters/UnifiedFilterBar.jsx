@@ -1,3 +1,4 @@
+import { getBackendBaseUrl } from "../../utils/apiConfig";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
@@ -10,7 +11,7 @@ import {
 
 import { getShiftLetter } from "../../utils/shiftUtils";
 
-const BASE = (import.meta.env.VITE_BACKEND_BASE_URL || "").replace(/\/+$/, "");
+const BASE = getBackendBaseUrl();
 
 const getLocalShift = () => getShiftLetter();
 

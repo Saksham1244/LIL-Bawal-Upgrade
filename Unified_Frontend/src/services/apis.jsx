@@ -1,45 +1,45 @@
-const BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL;
+import { getBackendBaseUrl } from "../utils/apiConfig";
 
 export const endpoints = {
   // AUTH ENDPOINTS
-  FETCH_USERNAME_API: BASE_URL + "/login/username",
-  LOGIN_API: BASE_URL + "/login/Userlogin",
+  get FETCH_USERNAME_API() { return getBackendBaseUrl() + "/login/username"; },
+  get LOGIN_API() { return getBackendBaseUrl() + "/login/Userlogin"; },
 
   // Home ENDPOINTS
-  PLANT_OEE_API: BASE_URL + "/Home/plantOEE",
-  PLANT_PLAN_ACTUAL_API: BASE_URL + "/Home/GetPlanActualQty",
-  PLANT_OK_TOTAL_API: BASE_URL + "/Home/GetOKTotalQty",
-  PLANT_TIMES_API: BASE_URL + "/Home/plantDowntimeBreakdownDetails",
+  get PLANT_OEE_API() { return getBackendBaseUrl() + "/Home/plantOEE"; },
+  get PLANT_PLAN_ACTUAL_API() { return getBackendBaseUrl() + "/Home/GetPlanActualQty"; },
+  get PLANT_OK_TOTAL_API() { return getBackendBaseUrl() + "/Home/GetOKTotalQty"; },
+  get PLANT_TIMES_API() { return getBackendBaseUrl() + "/Home/plantDowntimeBreakdownDetails"; },
 
   // Performance ENDPOINTS
-  PLANT_DATA_API: BASE_URL + "/PerformanceHome/machinewise",
-  PLANT_OEE_TREND_API: BASE_URL + "/PerformanceHome/GetOEETrend",
-  PLANT_AVAILABILITY_TREND_API: BASE_URL + "/PerformanceHome/GetAvailabilityTrend",
-  PLANT_PERFORMANCE_TREND_API: BASE_URL + "/PerformanceHome/GetPerformanceTrend",
-  PLANT_QUALITY_TREND_API: BASE_URL + "/PerformanceHome/GetQualityTrend",
-  TOTAL_DOWNTIME_API: BASE_URL + "/PerformanceHome/GetTotalandDownTime",
-  GOOD_REJECTED_API: BASE_URL + "/PerformanceHome/GetGoodRejectedQty",
+  get PLANT_DATA_API() { return getBackendBaseUrl() + "/PerformanceHome/machinewise"; },
+  get PLANT_OEE_TREND_API() { return getBackendBaseUrl() + "/PerformanceHome/GetOEETrend"; },
+  get PLANT_AVAILABILITY_TREND_API() { return getBackendBaseUrl() + "/PerformanceHome/GetAvailabilityTrend"; },
+  get PLANT_PERFORMANCE_TREND_API() { return getBackendBaseUrl() + "/PerformanceHome/GetPerformanceTrend"; },
+  get PLANT_QUALITY_TREND_API() { return getBackendBaseUrl() + "/PerformanceHome/GetQualityTrend"; },
+  get TOTAL_DOWNTIME_API() { return getBackendBaseUrl() + "/PerformanceHome/GetTotalandDownTime"; },
+  get GOOD_REJECTED_API() { return getBackendBaseUrl() + "/PerformanceHome/GetGoodRejectedQty"; },
 
   // Machine Performance ENDPOINTS
-  MACHINE_PERFORMANCE_API: BASE_URL + "/PerfMachine/machineoee",
-  MACHINE_TIMES_API: BASE_URL + "/PerfMachine/machineTimes",
-  MACHINE_LOSSNAME_API: BASE_URL + "/PerfMachine/lossname",
-  MACHINE_SUBLOSS_API: BASE_URL + "/PerfMachine/Sublossname",
+  get MACHINE_PERFORMANCE_API() { return getBackendBaseUrl() + "/PerfMachine/machineoee"; },
+  get MACHINE_TIMES_API() { return getBackendBaseUrl() + "/PerfMachine/machineTimes"; },
+  get MACHINE_LOSSNAME_API() { return getBackendBaseUrl() + "/PerfMachine/lossname"; },
+  get MACHINE_SUBLOSS_API() { return getBackendBaseUrl() + "/PerfMachine/Sublossname"; },
 
   // 4M analysis
-  FOURM_SHIFT_LOSS_API: BASE_URL + "/PerfMachine/AlllossForShift4M",
-  FOURM_LOSS_FILTER_API: BASE_URL + "/PerfMachine/lossesForDayWeekMonthDates4M",
+  get FOURM_SHIFT_LOSS_API() { return getBackendBaseUrl() + "/PerfMachine/AlllossForShift4M"; },
+  get FOURM_LOSS_FILTER_API() { return getBackendBaseUrl() + "/PerfMachine/lossesForDayWeekMonthDates4M"; },
 
   // TPM
-  TPM_SHIFT_LOSS_API: BASE_URL + "/PerfMachine/AlllossForShiftTPM",
-  TPM_LOSS_FILTER_API: BASE_URL + "/PerfMachine/lossesForDayWeekMonthDatesTPM",
+  get TPM_SHIFT_LOSS_API() { return getBackendBaseUrl() + "/PerfMachine/AlllossForShiftTPM"; },
+  get TPM_LOSS_FILTER_API() { return getBackendBaseUrl() + "/PerfMachine/lossesForDayWeekMonthDatesTPM"; },
 
   // Cumulative Trend APIs
-  SHIFT_CUMULATIVE_TREND_API: BASE_URL + "/PerfMachine/GetShiftCumulativeTrendDurationOccurrence",
-  MODE_CUMULATIVE_TREND_API: BASE_URL + "/PerfMachine/GetCumulativeTrendDurationOccurrenceByMode",
+  get SHIFT_CUMULATIVE_TREND_API() { return getBackendBaseUrl() + "/PerfMachine/GetShiftCumulativeTrendDurationOccurrence"; },
+  get MODE_CUMULATIVE_TREND_API() { return getBackendBaseUrl() + "/PerfMachine/GetCumulativeTrendDurationOccurrenceByMode"; },
 
   // Hourly Trends
-  HOURLY_EXP_ACTUAL_TREND_API: BASE_URL + "/PerfMachine/GetHourlyExpActualQtyTrend",
-  REJECTED_TREND_API: BASE_URL + "/PerfMachine/GetHourlyTotalRejectedQtyTrend",
-  REJECTION_REASON_API: BASE_URL + "/PerfMachine/GetReworkQtyandReasonChart",
+  get HOURLY_EXP_ACTUAL_TREND_API() { return getBackendBaseUrl() + "/PerfMachine/GetHourlyExpActualQtyTrend"; },
+  get REJECTED_TREND_API() { return getBackendBaseUrl() + "/PerfMachine/GetHourlyTotalRejectedQtyTrend"; },
+  get REJECTION_REASON_API() { return getBackendBaseUrl() + "/PerfMachine/GetReworkQtyandReasonChart"; },
 };

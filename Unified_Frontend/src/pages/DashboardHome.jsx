@@ -1,3 +1,4 @@
+import { getBackendBaseUrl } from "../utils/apiConfig";
 import CompactCockpitWidget from "../partials/cockpit/CompactCockpitWidget";
 import React, { useEffect, useState, useMemo } from 'react';
 import DashboardLayout from '../partials/dashboardLayout/DashboardLayout';
@@ -23,7 +24,7 @@ import {
 } from 'react-icons/md';
 import { getActiveShift, getShiftName } from '../utils/shiftUtils';
 
-const BASE = (import.meta.env.VITE_BACKEND_BASE_URL || '').replace(/\/+$/, '');
+const BASE = getBackendBaseUrl();
 
 export default function DashboardHome() {
   const todayStr = new Date().toISOString().split('T')[0];

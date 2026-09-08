@@ -1,3 +1,4 @@
+import { getBackendBaseUrl } from "../../../utils/apiConfig";
 import React, { useState, useEffect, useMemo } from "react";
 import DashboardLayout from "../../../partials/dashboardLayout/DashboardLayout";
 import axios from "axios";
@@ -21,7 +22,7 @@ import {
   MdRefresh,
 } from "react-icons/md";
 
-const BASE = (import.meta.env.VITE_BACKEND_BASE_URL || "").replace(/\/+$/, "");
+const BASE = getBackendBaseUrl();
 
 const formatDate = (iso) => {
   if (!iso) return "-";

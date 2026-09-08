@@ -1,3 +1,4 @@
+import { getBackendBaseUrl } from "../../utils/apiConfig";
 import React, { useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -34,7 +35,7 @@ import {
 
 import { getShiftLetter } from "../../utils/shiftUtils";
 
-const BASE_URL = (import.meta.env.VITE_BACKEND_BASE_URL || "").replace(/\/+$/, "");
+const BASE_URL = getBackendBaseUrl();
 
 const getLocalShift = () => getShiftLetter();
 

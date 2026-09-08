@@ -1,3 +1,4 @@
+import { getBackendBaseUrl } from "../../utils/apiConfig";
 import React, { useState, useEffect, useMemo } from "react";
 import DashboardLayout from "../../partials/dashboardLayout/DashboardLayout";
 import axios from "axios";
@@ -22,7 +23,7 @@ import {
   MdLocationOn,
 } from "react-icons/md";
 
-const BASE = (import.meta.env.VITE_BACKEND_BASE_URL || "").replace(/\/+$/, "");
+const BASE = getBackendBaseUrl();
 
 export default function SparePart() {
   const [spareParts, setSpareParts] = useState([]);

@@ -1,9 +1,10 @@
+import { getBackendBaseUrl } from "../../utils/apiConfig";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { MdOutlinePrecisionManufacturing, MdArrowForward } from "react-icons/md";
 
-const BASE = (import.meta.env.VITE_BACKEND_BASE_URL || "").replace(/\/+$/, "");
+const BASE = getBackendBaseUrl();
 
 export default function CompactCockpitWidget({ maxItems = 6, showHeader = true }) {
   const navigate = useNavigate();

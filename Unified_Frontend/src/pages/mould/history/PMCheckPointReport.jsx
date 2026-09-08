@@ -1,3 +1,4 @@
+import { getBackendBaseUrl } from "../../../utils/apiConfig";
 ﻿import React, { useState, useEffect, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import DashboardLayout from "../../../partials/dashboardLayout/DashboardLayout";
@@ -19,7 +20,7 @@ import {
   MdAssignment,
 } from "react-icons/md";
 
-const BASE = (import.meta.env.VITE_BACKEND_BASE_URL || "").replace(/\/+$/, "");
+const BASE = getBackendBaseUrl();
 
 export default function PMCheckPointReport() {
   const [searchParams] = useSearchParams();

@@ -1,3 +1,4 @@
+import { getBackendBaseUrl } from "../../utils/apiConfig";
 ﻿import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import DashboardLayout from "../../partials/dashboardLayout/DashboardLayout";
@@ -21,7 +22,7 @@ import {
   Tooltip,
 } from "recharts";
 
-const baseURL = (import.meta.env.VITE_BACKEND_BASE_URL || "").replace(/\/+$/, "");
+const baseURL = getBackendBaseUrl();
 
 export default function Downtime() {
   const [filterMode, setFilterMode] = useState("DAY");

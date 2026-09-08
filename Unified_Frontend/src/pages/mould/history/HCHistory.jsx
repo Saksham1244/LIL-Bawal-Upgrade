@@ -1,3 +1,4 @@
+import { getBackendBaseUrl } from "../../../utils/apiConfig";
 import React, { useState, useEffect } from "react";
 import DashboardLayout from "../../../partials/DashboardLayout";
 import {
@@ -47,7 +48,7 @@ const HCHistory = () => {
   const [loadingMould, setLoadingMould] = useState(false);
 
   // BASE for API — uses Vite env or fallback to the host you shared
-  const BASE = (import.meta.env.VITE_BACKEND_BASE_URL || "http://192.168.1.16:3004/api").replace(/\/+$/, "");
+const BASE = getBackendBaseUrl();
   const HC_CHART_ENDPOINT = `${BASE}/MouldMaintenanceHistoryhc/hcPlannedVsActualCustom`;
   const HC_TIME_ENDPOINT = `${BASE}/MouldMaintenanceHistoryhc/hcTimeDetails`;
   const HC_DELAY_ENDPOINT = `${BASE}/MouldMaintenanceHistoryhc/hcDelayOnTime`;

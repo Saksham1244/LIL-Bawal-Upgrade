@@ -1,3 +1,4 @@
+import { getBackendBaseUrl } from "../../utils/apiConfig";
 import React, { useEffect, useState, useMemo } from 'react';
 import DashboardLayout from '../../partials/DashboardLayout';
 import {
@@ -26,7 +27,7 @@ import {
 } from 'react-icons/md';
 
 // API endpoints
-const BASE = (import.meta.env.VITE_BACKEND_BASE_URL || '').replace(/\/+$/, '');
+const BASE = getBackendBaseUrl();
 const HC_STATUS_ENDPOINT = BASE + "/HCStatus/MouldHCStatus";
 const HC_WEEKWISE_ENDPOINT = BASE + "/HCStatus/MouldHCWeekWisePlan";
 const HC_MOULDWISE_PLAN_ENDPOINT = BASE + "/HCStatus/MouldWiseHCPlan";

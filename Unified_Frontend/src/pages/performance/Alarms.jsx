@@ -1,3 +1,4 @@
+import { getBackendBaseUrl } from "../../utils/apiConfig";
 ﻿import React, { useState, useEffect } from "react";
 import DashboardLayout from "../../partials/dashboardLayout/DashboardLayout";
 import AllAlarmsDurationChart from "../../partials/charts/machineAlarms/AllAlarmsDurationChart";
@@ -10,7 +11,7 @@ import axios from "axios";
 import { MdNotificationsActive, MdPrecisionManufacturing } from "react-icons/md";
 
 const Alarms = () => {
-  const BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL;
+const BASE_URL = getBackendBaseUrl();
   const [machines, setMachines] = useState([]);
   const [selectedMachine, setSelectedMachine] = useState("");
   const [loading, setLoading] = useState(true);

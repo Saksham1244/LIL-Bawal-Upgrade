@@ -1,3 +1,4 @@
+import { getBackendBaseUrl } from "../../utils/apiConfig";
 // src/pages/performance/Parameters.jsx
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import DashboardLayout from "../../partials/dashboardLayout/DashboardLayout";
@@ -195,7 +196,7 @@ export default function Parameters() {
   const [loadingChart, setLoadingChart] = useState(false);
   const [hasDataPoints, setHasDataPoints] = useState(null);
 
-  const BASE_URL = (import.meta.env.VITE_BACKEND_BASE_URL || "").replace(/\/+$/, "");
+const BASE_URL = getBackendBaseUrl();
 
   // Active steps across all groups
   const activeSteps = useMemo(() => {

@@ -1,3 +1,4 @@
+import { getBackendBaseUrl } from "../../utils/apiConfig";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
@@ -14,7 +15,7 @@ import TopFiveDowntimeOccurrenceChart from "../../partials/charts/machineDowntim
 const MachineDowntime = () => {
   const { stationId } = useParams();
   const filters = useSelector((state) => state.filters);
-  const baseURL = import.meta.env.VITE_BACKEND_BASE_URL;
+const baseURL = getBackendBaseUrl();
 
   const [operatingRunData, setOperatingRunData] = useState({});
   const [idleTimeData, setIdleTimeData] = useState({});
