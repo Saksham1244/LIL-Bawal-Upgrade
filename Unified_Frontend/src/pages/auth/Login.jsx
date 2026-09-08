@@ -46,11 +46,11 @@ export default function Login() {
         {/* Top Header & Logo */}
         <div className="text-center mb-6">
           {/* Corporate Brand Logo */}
-          <div className="flex items-center justify-center mb-4">
+          <div className="flex items-center justify-center mb-3">
             <img
               src="/lumax-logo.png"
               alt="LUMAX"
-              className="h-9 w-auto object-contain"
+              className="h-14 sm:h-16 w-auto object-contain drop-shadow-xs"
             />
           </div>
 
