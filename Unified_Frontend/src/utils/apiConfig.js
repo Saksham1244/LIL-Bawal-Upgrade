@@ -1,22 +1,24 @@
 /**
  * Dynamically resolves the Backend API Base URL.
  * Supports:
- * 1. Global Public Cloudflare Tunnel: https://satisfy-spencer-flickr-sand.trycloudflare.com/api
- * 2. Public Direct IP: http://163.223.102.4:3010/api
- * 3. Local Plant Server LAN IP: http://192.168.12.6:3010/api
- * 4. Localhost Web: http://localhost:3010/api
+ * 1. Saved Custom Server Endpoint (from Settings Modal)
+ * 2. Personal Laptop Server: http://192.168.1.14:3010/api
+ * 3. Plant Server LAN IP: http://192.168.12.6:3010/api
+ * 4. Global Cloudflare Tunnel: https://satisfy-spencer-flickr-sand.trycloudflare.com/api
+ * 5. Localhost: http://localhost:3010/api
  */
 export const getBackendBaseUrl = () => {
   if (typeof window !== "undefined") {
-    // Check if custom server endpoint is set in localStorage
+    // 1. Check if user configured a server endpoint
     const savedUrl = localStorage.getItem("ppms_server_api_url");
     if (savedUrl) return savedUrl.replace(/\/+$/, "");
 
-    // Native Capacitor Android App environment (Uses secure Cloudflare Tunnel)
+    // 2. If running inside native Android App (Capacitor)
     if (window.Capacitor) {
-      return "https://satisfy-spencer-flickr-sand.trycloudflare.com/api";
+      return "http://192.168.1.14:3010/api";
     }
 
+    // 3. Web Browser dynamic host resolution
     if (window.location) {
       const { hostname, protocol } = window.location;
       if (hostname && hostname !== "localhost" && hostname !== "127.0.0.1") {
@@ -28,7 +30,7 @@ export const getBackendBaseUrl = () => {
     }
   }
   const envUrl = import.meta.env.VITE_BACKEND_BASE_URL;
-  return (envUrl || "https://satisfy-spencer-flickr-sand.trycloudflare.com/api").replace(/\/+$/, "");
+  return (envUrl || "http://192.168.1.14:3010/api").replace(/\/+$/, "");
 };
 
 export const API_BASE_URL = getBackendBaseUrl();
