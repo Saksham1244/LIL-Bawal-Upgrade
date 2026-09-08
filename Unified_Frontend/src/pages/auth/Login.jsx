@@ -57,9 +57,6 @@ export default function Login() {
           <h1 className="text-xl sm:text-2xl font-bold text-slate-800 tracking-tight">
             Welcome Back
           </h1>
-          <p className="text-xs sm:text-[13px] text-slate-400 mt-1 font-normal">
-            Sign in to PPMS Command Center
-          </p>
         </div>
 
         {/* Login Form */}
