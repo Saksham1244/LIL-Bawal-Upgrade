@@ -13,9 +13,6 @@ import {
   MdCheckCircle,
   MdWarning,
   MdInfoOutline,
-  MdSpeed,
-  MdTimer,
-  MdBolt,
 } from "react-icons/md";
 
 const BASE = getBackendBaseUrl();

@@ -45,9 +45,28 @@ const formatDate = (iso) => {
   }
 };
 
+const calculateDelayDays = (dateStr, status, statusCode) => {
+  if (!dateStr || dateStr === '-' || String(dateStr).startsWith('1900')) {
+    if (statusCode === 3 || String(status || '').toLowerCase().includes('overdue')) {
+      return 9999;
+    }
+    return -9999;
+  }
+  const targetDate = new Date(dateStr);
+  if (isNaN(targetDate.getTime())) return 0;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  targetDate.setHours(0, 0, 0, 0);
+
+  const diffTime = today.getTime() - targetDate.getTime();
+  return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+};
+
 export default function HCStatus() {
   const [activeTab, setActiveTab] = useState('alerts');
   const [searchTerm, setSearchTerm] = useState('');
+  const [delaySort, setDelaySort] = useState('maxDelayed');
 
   // Data states
   const [pmStatusRows, setPmStatusRows] = useState([]);
@@ -106,13 +125,17 @@ export default function HCStatus() {
           else if (statusCode === 7 || statusCode === '7') statusStr = 'Completed';
           else if (typeof statusCode === 'string' && statusCode) statusStr = statusCode;
 
+          const nextDate = formatDate(r.NextHCDueDate || r.NextPMDueDate);
+          const delay = calculateDelayDays(nextDate, statusStr, statusCode);
+
           return {
             mould: String(r.MouldName || r.MouldID || '-'),
             mouldID: String(r.MouldID || '-'),
             status: statusStr,
             statusCode: statusCode,
-            nextPMDueDate: formatDate(r.NextHCDueDate || r.NextPMDueDate),
+            nextPMDueDate: nextDate,
             shotCount: Number(r.HealthCheckDue ?? r.NextHCDue ?? 0),
+            delayDays: delay,
           };
         })
       );
@@ -194,16 +217,52 @@ export default function HCStatus() {
     fetchAll();
   }, []);
 
+  // Helper: check if mould is due by both date and shot criteria
+  const isDueByBoth = (r) => {
+    // Due by date: overdue (3), due soon (2), or delayDays >= 0
+    const dateDue = r.statusCode === 3 || r.statusCode === 2 || r.delayDays >= 0 || String(r.status || '').toLowerCase().includes('due') || String(r.status || '').toLowerCase().includes('overdue');
+    // Due by shots: shots at 0, shots <= 25000, or overdue/due status
+    const shotsDue = r.shotCount <= 25000 || r.shotCount === 0 || r.statusCode === 3;
+    return dateDue && shotsDue;
+  };
+
+  const dueBothRows = useMemo(() => {
+    return pmStatusRows.filter(isDueByBoth);
+  }, [pmStatusRows]);
+
+  const sortRowsByDelay = (rows) => {
+    if (delaySort === 'maxDelayed') {
+      return [...rows].sort((a, b) => b.delayDays - a.delayDays);
+    }
+    if (delaySort === 'leastDelayed') {
+      return [...rows].sort((a, b) => a.delayDays - b.delayDays);
+    }
+    return rows;
+  };
+
   // Filtered rows based on search and active tab
   const filteredAlerts = useMemo(() => {
     const q = (searchTerm || '').toLowerCase();
-    return pmStatusRows.filter(
+    const list = pmStatusRows.filter(
       (r) =>
         String(r.mould || '').toLowerCase().includes(q) ||
         String(r.status || '').toLowerCase().includes(q) ||
         String(r.nextPMDueDate || '').toLowerCase().includes(q)
     );
-  }, [pmStatusRows, searchTerm]);
+
+    return sortRowsByDelay(list);
+  }, [pmStatusRows, searchTerm, delaySort]);
+
+  const filteredDueBoth = useMemo(() => {
+    const q = (searchTerm || '').toLowerCase();
+    const list = dueBothRows.filter(
+      (r) =>
+        String(r.mould || '').toLowerCase().includes(q) ||
+        String(r.status || '').toLowerCase().includes(q) ||
+        String(r.nextPMDueDate || '').toLowerCase().includes(q)
+    );
+    return sortRowsByDelay(list);
+  }, [dueBothRows, searchTerm, delaySort]);
 
   const filteredPlan = useMemo(() => {
     const q = (searchTerm || '').toLowerCase();
@@ -249,11 +308,14 @@ export default function HCStatus() {
   // Excel Export
   const handleExportExcel = () => {
     let exportData = [];
-    let fileName = 'PM_Status_Report';
+    let fileName = 'HC_Status_Report';
 
     if (activeTab === 'alerts') {
       exportData = filteredAlerts;
       fileName = 'HC_Alerts_Status';
+    } else if (activeTab === 'dueBoth') {
+      exportData = filteredDueBoth;
+      fileName = 'HC_Due_By_Date_And_Shots_Both';
     } else if (activeTab === 'plan') {
       exportData = filteredPlan;
       fileName = 'HC_In_Plan_Report';
@@ -293,6 +355,38 @@ export default function HCStatus() {
       <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
         <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
         {status || 'Normal'}
+      </span>
+    );
+  };
+
+  const getDelayBadge = (days) => {
+    if (days === 9999 || days >= 999) {
+      return (
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-rose-100 text-rose-800 border border-rose-200 whitespace-nowrap">
+          <MdAccessTime size={12} className="text-rose-600 shrink-0" />
+          Max Delayed
+        </span>
+      );
+    }
+    if (days > 0) {
+      return (
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-rose-100 text-rose-700 border border-rose-200 whitespace-nowrap">
+          <MdAccessTime size={12} className="text-rose-600 shrink-0" />
+          +{days}d delay
+        </span>
+      );
+    }
+    if (days === 0) {
+      return (
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-200 whitespace-nowrap">
+          <MdAccessTime size={12} className="text-amber-600 shrink-0" />
+          Due Today
+        </span>
+      );
+    }
+    return (
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200 whitespace-nowrap">
+        {Math.abs(days)}d left
       </span>
     );
   };
@@ -449,7 +543,7 @@ export default function HCStatus() {
             <div className="flex items-center justify-between mb-2">
               <h2 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
                 <MdTrendingUp className="text-emerald-500" size={16} />
-                <span>Next 6 Months HC Forecast</span>
+                <span>Next 6 Months HC Forecast-by duration</span>
               </h2>
               <span className="text-[10px] font-bold text-slate-400 font-mono">
                 {next6MonthsPlan.length} Months
@@ -498,13 +592,13 @@ export default function HCStatus() {
         {/* SECTION 4: INTERACTIVE TABBED DATA WORKSPACE */}
         <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-2xs">
           {/* TAB BAR & SEARCH ROW */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+          <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3 pb-3 border-b border-slate-100">
             {/* TABS */}
-            <div className="flex items-center gap-1.5 overflow-x-auto">
+            <div className="flex items-center gap-1.5 overflow-x-auto min-w-0 pb-1 xl:pb-0">
               <button
                 type="button"
                 onClick={() => setActiveTab("alerts")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors shrink-0 flex items-center gap-1.5 cursor-pointer ${activeTab === "alerts" ? "bg-[#0284c7] text-white shadow-2xs" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
+                className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-colors shrink-0 whitespace-nowrap flex items-center gap-1.5 cursor-pointer ${activeTab === "alerts" ? "bg-[#0284c7] text-white shadow-2xs" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
               >
                 <span>HC Alerts & Status</span>
                 <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${activeTab === "alerts" ? "bg-white/20 text-white" : "bg-slate-200 text-slate-700"}`}>
@@ -513,8 +607,18 @@ export default function HCStatus() {
               </button>
               <button
                 type="button"
+                onClick={() => setActiveTab("dueBoth")}
+                className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-colors shrink-0 whitespace-nowrap flex items-center gap-1.5 cursor-pointer ${activeTab === "dueBoth" ? "bg-[#0284c7] text-white shadow-2xs" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
+              >
+                <span>Due by Date & Shots Both</span>
+                <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${activeTab === "dueBoth" ? "bg-white/20 text-white" : "bg-slate-200 text-slate-700"}`}>
+                  {dueBothRows.length}
+                </span>
+              </button>
+              <button
+                type="button"
                 onClick={() => setActiveTab("plan")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors shrink-0 flex items-center gap-1.5 cursor-pointer ${activeTab === "plan" ? "bg-[#0284c7] text-white shadow-2xs" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
+                className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-colors shrink-0 whitespace-nowrap flex items-center gap-1.5 cursor-pointer ${activeTab === "plan" ? "bg-[#0284c7] text-white shadow-2xs" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
               >
                 <span>Mould-Wise HC Plan</span>
                 <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${activeTab === "plan" ? "bg-white/20 text-white" : "bg-slate-200 text-slate-700"}`}>
@@ -524,7 +628,7 @@ export default function HCStatus() {
               <button
                 type="button"
                 onClick={() => setActiveTab("dueDate")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors shrink-0 flex items-center gap-1.5 cursor-pointer ${activeTab === "dueDate" ? "bg-[#0284c7] text-white shadow-2xs" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
+                className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-colors shrink-0 whitespace-nowrap flex items-center gap-1.5 cursor-pointer ${activeTab === "dueDate" ? "bg-[#0284c7] text-white shadow-2xs" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
               >
                 <span>Next Due by Date</span>
                 <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${activeTab === "dueDate" ? "bg-white/20 text-white" : "bg-slate-200 text-slate-700"}`}>
@@ -534,7 +638,7 @@ export default function HCStatus() {
               <button
                 type="button"
                 onClick={() => setActiveTab("shotCount")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors shrink-0 flex items-center gap-1.5 cursor-pointer ${activeTab === "shotCount" ? "bg-[#0284c7] text-white shadow-2xs" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
+                className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-colors shrink-0 whitespace-nowrap flex items-center gap-1.5 cursor-pointer ${activeTab === "shotCount" ? "bg-[#0284c7] text-white shadow-2xs" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
               >
                 <span>Due by Shot Count</span>
                 <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${activeTab === "shotCount" ? "bg-white/20 text-white" : "bg-slate-200 text-slate-700"}`}>
@@ -543,16 +647,35 @@ export default function HCStatus() {
               </button>
             </div>
 
-            {/* INSTANT SEARCH INPUT */}
-            <div className="relative w-full md:w-64">
-              <MdSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-              <input
-                type="text"
-                placeholder="Search moulds or dates..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#0284c7] focus:bg-white"
-              />
+            {/* CONTROLS: SEARCH & DELAY FILTER SHIFTED TO RIGHT */}
+            <div className="flex items-center gap-2 shrink-0 ml-auto justify-end">
+              {/* INSTANT SEARCH INPUT */}
+              <div className="relative w-48 sm:w-56">
+                <MdSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                <input
+                  type="text"
+                  placeholder="Search moulds or dates..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#0284c7] focus:bg-white"
+                />
+              </div>
+
+              {/* Delay Filter: Shifted to the right side */}
+              {(activeTab === 'alerts' || activeTab === 'dueBoth') && (
+                <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-lg shrink-0 shadow-2xs">
+                  <span className="text-[11px] font-bold text-slate-500 whitespace-nowrap">Delay:</span>
+                  <select
+                    value={delaySort}
+                    onChange={(e) => setDelaySort(e.target.value)}
+                    className="text-xs bg-transparent text-slate-700 font-semibold focus:outline-none cursor-pointer"
+                  >
+                    <option value="maxDelayed">Max Delayed to Least Delayed</option>
+                    <option value="leastDelayed">Least Delayed to Max Delayed</option>
+                    <option value="default">Default Order</option>
+                  </select>
+                </div>
+              )}
             </div>
           </div>
 
@@ -560,13 +683,25 @@ export default function HCStatus() {
           <div className="overflow-x-auto mt-3 rounded-lg border border-slate-200" style={{ maxHeight: '380px' }}>
             <table className="w-full text-left border-collapse">
               <thead className="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-600 sticky top-0 z-10 border-b border-slate-200">
-                {activeTab === 'alerts' && (
+                {(activeTab === 'alerts' || activeTab === 'dueBoth') && (
                   <tr>
                     <th className="py-2.5 px-3">#</th>
                     <th className="py-2.5 px-3">Mould Description</th>
                     <th className="py-2.5 px-3">HC Status</th>
                     <th className="py-2.5 px-3">Next HC Due Date</th>
                     <th className="py-2.5 px-3 text-right">Remaining Shots</th>
+                    <th
+                      className="py-2.5 px-3 text-center cursor-pointer hover:text-[#0284c7] select-none"
+                      onClick={() => setDelaySort((prev) => (prev === 'maxDelayed' ? 'leastDelayed' : 'maxDelayed'))}
+                      title="Click to toggle delay sorting"
+                    >
+                      <div className="inline-flex items-center gap-1 justify-center">
+                        <span>Delay Status</span>
+                        <span className="text-[10px] text-slate-400 font-bold">
+                          {delaySort === 'maxDelayed' ? '▼ Max' : delaySort === 'leastDelayed' ? '▲ Min' : '⇅'}
+                        </span>
+                      </div>
+                    </th>
                   </tr>
                 )}
                 {activeTab === 'plan' && (
@@ -597,11 +732,11 @@ export default function HCStatus() {
                 {activeTab === 'alerts' && (
                   loadingPM ? (
                     <tr>
-                      <td colSpan={5} className="py-8 text-center text-slate-400">Loading HC alerts...</td>
+                      <td colSpan={6} className="py-8 text-center text-slate-400">Loading HC alerts...</td>
                     </tr>
                   ) : filteredAlerts.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="py-8 text-center text-slate-400">No matching HC status records</td>
+                      <td colSpan={6} className="py-8 text-center text-slate-400">No matching HC status records</td>
                     </tr>
                   ) : (
                     filteredAlerts.map((row, idx) => (
@@ -612,6 +747,37 @@ export default function HCStatus() {
                         <td className="py-2.5 px-3 font-mono text-slate-600">{row.nextPMDueDate}</td>
                         <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-700">
                           {Number(row.shotCount).toLocaleString()}
+                        </td>
+                        <td className="py-2.5 px-3 text-center">
+                          {getDelayBadge(row.delayDays)}
+                        </td>
+                      </tr>
+                    ))
+                  )
+                )}
+
+                {/* 2. Due by Date & Shots Both */}
+                {activeTab === 'dueBoth' && (
+                  loadingPM ? (
+                    <tr>
+                      <td colSpan={6} className="py-8 text-center text-slate-400">Loading Due by Date & Shots records...</td>
+                    </tr>
+                  ) : filteredDueBoth.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="py-8 text-center text-slate-400">No moulds due by both date and shots</td>
+                    </tr>
+                  ) : (
+                    filteredDueBoth.map((row, idx) => (
+                      <tr key={idx} className="hover:bg-sky-50/40 transition-colors">
+                        <td className="py-2.5 px-3 text-slate-400 font-mono text-[11px]">{idx + 1}</td>
+                        <td className="py-2.5 px-3 font-semibold text-slate-800">{row.mould}</td>
+                        <td className="py-2.5 px-3">{getStatusBadge(row.status)}</td>
+                        <td className="py-2.5 px-3 font-mono text-slate-600">{row.nextPMDueDate}</td>
+                        <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-700">
+                          {Number(row.shotCount).toLocaleString()}
+                        </td>
+                        <td className="py-2.5 px-3 text-center">
+                          {getDelayBadge(row.delayDays)}
                         </td>
                       </tr>
                     ))

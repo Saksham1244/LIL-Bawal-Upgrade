@@ -10,15 +10,16 @@ import {
   Tooltip,
   Legend,
   Title,
+  Filler,
 } from "chart.js";
 import { fetchPerformancePlantData } from "../../../services/operations/performancePlantDataAPI";
 
-ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend, Title);
+ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend, Title, Filler);
 
 const PerformanceTrendChart = () => {
   const dispatch = useDispatch();
   const { performanceTrendData } = useSelector((state) => state.performance);
-  const { filters } = useSelector((state) => state);
+  const filters = useSelector((state) => state.filters || {});
 
   const [showExpected, setShowExpected] = useState(true);
   const [showActual, setShowActual] = useState(true);

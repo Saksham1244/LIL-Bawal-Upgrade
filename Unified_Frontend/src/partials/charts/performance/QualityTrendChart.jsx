@@ -10,9 +10,10 @@ import {
   Tooltip,
   Legend,
   Title,
+  Filler,
 } from "chart.js";
 
-ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend, Title);
+ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend, Title, Filler);
 
 const QualityTrendChart = () => {
   const { qualityTrendData } = useSelector((state) => state.performance);

@@ -51,11 +51,76 @@ const formatDateTime = (iso) => {
   }
 };
 
+const formatWorkMonth = (raw) => {
+  if (!raw) return "Period";
+  const str = String(raw).trim();
+
+  // 1. Format "YYYY-MM" or "YYYY-M" (e.g., 2026-02, 2026-2, 2026-3)
+  const matchIso = str.match(/^(\d{4})[-/](\d{1,2})$/);
+  if (matchIso) {
+    const year = matchIso[1];
+    const monthNum = parseInt(matchIso[2], 10);
+    const months = [
+      "Jan", "Feb", "March", "Apr", "May", "June",
+      "July", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+    if (monthNum >= 1 && monthNum <= 12) {
+      return `${months[monthNum - 1]} ${year}`;
+    }
+  }
+
+  // 2. Format "Mon'YY" or "Mon-YY" (e.g., Feb'26, Jul'26)
+  const matchApos = str.match(/^([A-Za-z]{3,})['\-](\d{2,4})$/);
+  if (matchApos) {
+    let m = matchApos[1];
+    let y = matchApos[2];
+    if (y.length === 2) y = "20" + y;
+    const mLower = m.toLowerCase();
+    if (mLower.startsWith("jan")) m = "Jan";
+    else if (mLower.startsWith("feb")) m = "Feb";
+    else if (mLower.startsWith("mar")) m = "March";
+    else if (mLower.startsWith("apr")) m = "Apr";
+    else if (mLower.startsWith("may")) m = "May";
+    else if (mLower.startsWith("jun")) m = "June";
+    else if (mLower.startsWith("jul")) m = "July";
+    else if (mLower.startsWith("aug")) m = "Aug";
+    else if (mLower.startsWith("sep")) m = "Sep";
+    else if (mLower.startsWith("oct")) m = "Oct";
+    else if (mLower.startsWith("nov")) m = "Nov";
+    else if (mLower.startsWith("dec")) m = "Dec";
+    return `${m} ${y}`;
+  }
+
+  // 3. Format "YYYY-MM-DD"
+  const matchFull = str.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+  if (matchFull) {
+    const year = matchFull[1];
+    const monthNum = parseInt(matchFull[2], 10);
+    const months = [
+      "Jan", "Feb", "March", "Apr", "May", "June",
+      "July", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+    if (monthNum >= 1 && monthNum <= 12) {
+      return `${months[monthNum - 1]} ${year}`;
+    }
+  }
+
+  return str;
+};
+
+const parseDuration = (val) => {
+  if (val === null || val === undefined || val === "-") return -1;
+  if (typeof val === "number") return val;
+  const num = parseFloat(String(val).replace(/[^0-9.-]/g, ""));
+  return isNaN(num) ? -1 : num;
+};
+
 export default function MouldMaintenanceHistory() {
   const [activeTab, setActiveTab] = useState("PM"); // PM, HC, Breakdown, Spare
   const [startDate, setStartDate] = useState("2026-01-01");
   const [endDate, setEndDate] = useState("2026-09-03");
   const [selectedMould, setSelectedMould] = useState("All");
+  const [durationSort, setDurationSort] = useState("default"); // "default", "desc", "asc"
   const [loading, setLoading] = useState(false);
 
   const [mouldList, setMouldList] = useState([]);
@@ -110,13 +175,13 @@ export default function MouldMaintenanceHistory() {
         let chart = [];
         if (Array.isArray(customRows) && customRows.length > 0) {
           chart = customRows.map((r) => ({
-            label: r.WorkMonth || r.WorkDate || r.Month || "Period",
+            label: formatWorkMonth(r.WorkMonth || r.WorkDate || r.Month || "Period"),
             plan: Number(r.PlannedCount || r.Plan || 0),
             actual: Number(r.ActualCount || r.Actual || 0),
           }));
         } else if (annualRows.length > 0) {
           chart = annualRows.map((r) => ({
-            label: r.Month || r.MonthName || "M",
+            label: formatWorkMonth(r.Month || r.MonthName || "M"),
             plan: Number(r.Plan || 0),
             actual: Number(r.Actual || 0),
             onTime: Number(r.OnTime || 0),
@@ -183,16 +248,8 @@ export default function MouldMaintenanceHistory() {
         if (Array.isArray(forecastRows) && forecastRows.length > 0) {
           chart = forecastRows.map((r) => {
             const raw = String(r.Month || "");
-            let monthLabel = raw;
-            const parts = raw.split("-");
-            if (parts.length === 2) {
-              const dt = new Date(Number(parts[0]), Number(parts[1]) - 1, 1);
-              if (!isNaN(dt.getTime())) {
-                monthLabel = dt.toLocaleString("default", { month: "short" });
-              }
-            }
             return {
-              label: monthLabel,
+              label: formatWorkMonth(raw),
               plan: Number(r.MouldsDueForHC || 0),
               actual: Number(r.Actual || 0),
             };
@@ -248,7 +305,7 @@ export default function MouldMaintenanceHistory() {
 
         // Chart Data
         const chart = (Array.isArray(durTrend) ? durTrend : []).map((r) => ({
-          label: r.Label || r.Month || "Period",
+          label: formatWorkMonth(r.Label || r.Month || "Period"),
           actual: Number(r.BreakdownSum || 0),
           plan: 0,
         }));
@@ -342,16 +399,34 @@ export default function MouldMaintenanceHistory() {
     fetchMaintenanceData();
   }, [activeTab, startDate, endDate]);
 
-  // Filter table data by selected mould tooling
+  // Filter table data by selected mould tooling and sort by duration
   const filteredTableData = useMemo(() => {
-    if (!selectedMould || selectedMould === "All") return rawTableData;
-    const q = selectedMould.toLowerCase();
-    return rawTableData.filter((r) => {
-      const name = String(r.MouldName || r.mould || "").toLowerCase();
-      const code = String(r.MouldID || r.mouldID || "").toLowerCase();
-      return name.includes(q) || code.includes(q);
-    });
-  }, [rawTableData, selectedMould]);
+    let data = [...rawTableData];
+    if (selectedMould && selectedMould !== "All") {
+      const q = selectedMould.toLowerCase();
+      data = data.filter((r) => {
+        const name = String(r.MouldName || r.mould || "").toLowerCase();
+        const code = String(r.MouldID || r.mouldID || "").toLowerCase();
+        return name.includes(q) || code.includes(q);
+      });
+    }
+
+    if (durationSort === "desc") {
+      data.sort((a, b) => {
+        const durA = parseDuration(a.PMDuration ?? a.BDDuration ?? a.HCDuration ?? a.Duration);
+        const durB = parseDuration(b.PMDuration ?? b.BDDuration ?? b.HCDuration ?? b.Duration);
+        return durB - durA;
+      });
+    } else if (durationSort === "asc") {
+      data.sort((a, b) => {
+        const durA = parseDuration(a.PMDuration ?? a.BDDuration ?? a.HCDuration ?? a.Duration);
+        const durB = parseDuration(b.PMDuration ?? b.BDDuration ?? b.HCDuration ?? b.Duration);
+        return durA - durB;
+      });
+    }
+
+    return data;
+  }, [rawTableData, selectedMould, durationSort]);
 
   // Export to Excel
   const handleExportExcel = () => {
@@ -769,13 +844,48 @@ export default function MouldMaintenanceHistory() {
         {/* SECTION 4: TABLE (Matching Corporate Modern Standard)               */}
         {/* =================================================================== */}
         <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-2xs">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
-              {statsData.tableTitle || "Details Table"}
-            </h3>
-            <span className="text-[11px] text-slate-400 font-mono">
-              {filteredTableData.length} Records Loaded
-            </span>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                {statsData.tableTitle || "Details Table"}
+              </h3>
+              <span className="text-[11px] text-slate-400 font-mono">
+                ({filteredTableData.length} Records Loaded)
+              </span>
+              {durationSort !== "default" && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-50 text-[#0284c7] border border-sky-200">
+                  <span>Sorted: {durationSort === "desc" ? "Highest → Lowest Duration" : "Lowest → Highest Duration"}</span>
+                  <button
+                    type="button"
+                    onClick={() => setDurationSort("default")}
+                    className="hover:text-rose-600 ml-0.5 cursor-pointer font-black"
+                    title="Reset sort to default"
+                  >
+                    ×
+                  </button>
+                </span>
+              )}
+            </div>
+
+            {/* DURATION SORT FILTER CONTROLS */}
+            {(activeTab === "PM" || activeTab === "Breakdown") && (
+              <div className="flex items-center gap-2">
+                <label className="text-[11px] font-bold text-slate-500 whitespace-nowrap">
+                  Duration Filter:
+                </label>
+                <div className="flex items-center bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 text-xs shadow-2xs focus-within:border-sky-500">
+                  <select
+                    value={durationSort}
+                    onChange={(e) => setDurationSort(e.target.value)}
+                    className="bg-transparent border-none outline-none text-xs font-bold text-slate-700 cursor-pointer pr-1"
+                  >
+                    <option value="default">Default Order</option>
+                    <option value="desc">Highest to Lowest (Duration ↓)</option>
+                    <option value="asc">Lowest to Highest (Duration ↑)</option>
+                  </select>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="overflow-x-auto rounded-lg border border-slate-100" style={{ maxHeight: "400px" }}>
@@ -789,7 +899,22 @@ export default function MouldMaintenanceHistory() {
                     <th className="py-2.5 px-3">Checklist Name</th>
                     <th className="py-2.5 px-3">Start Time</th>
                     <th className="py-2.5 px-3">End Time</th>
-                    <th className="py-2.5 px-3 text-right">Duration (min)</th>
+                    <th
+                      onClick={() => {
+                        setDurationSort((prev) =>
+                          prev === "desc" ? "asc" : prev === "asc" ? "default" : "desc"
+                        );
+                      }}
+                      className="py-2.5 px-3 text-right cursor-pointer select-none hover:text-[#0284c7] transition-colors"
+                      title="Click to sort: Highest to Lowest / Lowest to Highest"
+                    >
+                      <div className="inline-flex items-center gap-1 justify-end font-extrabold">
+                        <span>Duration (min)</span>
+                        {durationSort === "desc" && <span className="text-[#0284c7] font-black text-xs">↓</span>}
+                        {durationSort === "asc" && <span className="text-[#0284c7] font-black text-xs">↑</span>}
+                        {durationSort === "default" && <span className="text-slate-300 font-normal">↕</span>}
+                      </div>
+                    </th>
                     <th className="py-2.5 px-3 text-center">Status</th>
                   </tr>
                 )}
