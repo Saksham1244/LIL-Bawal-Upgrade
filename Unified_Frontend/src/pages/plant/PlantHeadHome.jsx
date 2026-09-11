@@ -32,7 +32,9 @@ export default function PlantHeadHome() {
         `${BASE}/PerformanceHome/machine-performance?filterType=${type}`
       );
       const data = await res.json();
-      setMachines(Array.isArray(data) ? data : []);
+      if (Array.isArray(data) && data.length > 0) {
+        setMachines(data);
+      }
     } catch (err) {
       console.error("API Error:", err);
     }
@@ -45,7 +47,11 @@ export default function PlantHeadHome() {
         `${BASE}/PerformanceHome/Plant-performance?FilterType=${type}`
       );
       const data = await res.json();
-      setPlantSummary(data[0] || data);
+      if (Array.isArray(data) && data.length > 0) {
+        setPlantSummary(data[0]);
+      } else if (data && typeof data === "object" && data.OEE !== undefined) {
+        setPlantSummary(data);
+      }
     } catch (err) {
       console.error("Plant Summary API Error:", err);
     }
@@ -57,8 +63,17 @@ export default function PlantHeadHome() {
       const res = await fetch(`${BASE}/PerformanceHome/GetProdDate`);
       const data = await res.json();
 
-      if (data && data.length > 0) {
-        const date = new Date(data[0].ProdDate).toISOString().split("T")[0];
+      let rawDate = null;
+      if (Array.isArray(data) && data.length > 0) {
+        rawDate = data[0].ProdDate;
+      } else if (data?.data?.ProdDate) {
+        rawDate = data.data.ProdDate;
+      } else if (data?.ProdDate) {
+        rawDate = data.ProdDate;
+      }
+
+      if (rawDate) {
+        const date = new Date(rawDate).toISOString().split("T")[0];
         setProdDate(date);
         setOriginalDate(date);
       }
@@ -110,7 +125,7 @@ export default function PlantHeadHome() {
       wsData.push(["Plant Summary"]);
       wsData.push([
         "OEE", "Availability", "Performance", "Quality",
-        "Plan", "Actual", "Achievement", "Total DT"
+        "Plan", "Actual", "Achievement", "Total DT (min)"
       ]);
       wsData.push([
         plantSummary.OEE,
@@ -126,14 +141,15 @@ export default function PlantHeadHome() {
     }
 
     wsData.push([
-      "Machine", "Running Mould", "OEE %", "Availability %", "Performance %", "Quality %",
+      "Machine", "Machine Status", "Running Mould", "OEE %", "Availability %", "Performance %", "Quality %",
       "Plan Qty", "Actual Qty", "Achievement %", "Rejection Qty",
-      "Man DT", "Material DT", "Method DT", "Machine DT", "Mould DT", "Total DT"
+      "Man (min)", "Material (min)", "Method (min)", "Machine DT (min)", "Mould (min)", "Total DT (min)"
     ]);
 
     machines.forEach((m) => {
       wsData.push([
         m.Machine,
+        m.MachineStatus || "IDLE",
         m.RunningMould || "-",
         m.OEE,
         m.Availability,
@@ -189,12 +205,13 @@ export default function PlantHeadHome() {
     }
 
     const head = [[
-      "Machine", "Running Mould", "OEE", "Avail", "Perf", "Qual",
-      "Plan", "Actual", "Achieve", "Rej", "Man", "Mat", "Meth", "Mach", "Mould", "Total DT"
+      "Machine", "Status", "Running Mould", "OEE", "Avail", "Perf", "Qual",
+      "Plan", "Actual", "Achieve", "Rej", "Man (m)", "Mat (m)", "Meth (m)", "Mach (m)", "Mould (m)", "Total DT (m)"
     ]];
 
     const body = machines.map((m) => [
       m.Machine,
+      m.MachineStatus || "IDLE",
       m.RunningMould || "-",
       `${m.OEE}%`,
       `${m.Availability}%`,
@@ -224,6 +241,76 @@ export default function PlantHeadHome() {
     doc.save(`Plant_Report_${prodDate || "Current"}.pdf`);
   };
 
+  // Badge Render Helpers
+  const renderMachineStatusBadge = (status) => {
+    const s = String(status || "").toUpperCase();
+    if (s === "RUNNING") {
+      return (
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border shadow-2xs bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>RUNNING</span>
+        </span>
+      );
+    }
+    if (s === "DOWN") {
+      return (
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border shadow-2xs bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/20">
+          <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+          <span>DOWN</span>
+        </span>
+      );
+    }
+    return (
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border shadow-2xs bg-slate-100 text-slate-600 border-slate-200 dark:bg-[#202530] dark:text-slate-300 dark:border-[#2f3544]">
+        <span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+        <span>IDLE</span>
+      </span>
+    );
+  };
+
+  const renderRunningMouldBadge = (mouldName, status) => {
+    if (!mouldName || mouldName === "-" || mouldName.toLowerCase() === "null") {
+      return <span className="text-gray-400 font-sans">-</span>;
+    }
+
+    const s = String(status || "DONE").toUpperCase();
+
+    if (s === "OVERDUE") {
+      return (
+        <span
+          className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium border shadow-2xs bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/25 max-w-full"
+          title={`${mouldName} (Overdue)`}
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0"></span>
+          <span className="truncate">{mouldName}</span>
+        </span>
+      );
+    }
+
+    if (s === "DUE") {
+      return (
+        <span
+          className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium border shadow-2xs bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/25 max-w-full"
+          title={`${mouldName} (Due Soon)`}
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"></span>
+          <span className="truncate">{mouldName}</span>
+        </span>
+      );
+    }
+
+    // Default: DONE (green pill with green dot, mould name inside, no 'DONE' text written)
+    return (
+      <span
+        className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium border shadow-2xs bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/25 max-w-full"
+        title={`${mouldName} (Maintained / OK)`}
+      >
+        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
+        <span className="truncate">{mouldName}</span>
+      </span>
+    );
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-6 pb-8">
@@ -231,9 +318,9 @@ export default function PlantHeadHome() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-gray-200 dark:border-[#222630]">
           <div>
             <h1 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white flex items-center gap-2">
-              <MdFactory className="text-amber-400" size={22} />
+              <MdFactory className="text-amber-600 dark:text-amber-400" size={22} />
               <span>Plant Head Executive Overview</span>
-              <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-400 font-mono font-normal">
+              <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-400 font-mono font-semibold">
                 Plant Head
               </span>
             </h1>
@@ -343,7 +430,9 @@ export default function PlantHeadHome() {
 
             <div className="bg-white dark:bg-[#181b21] border border-gray-200 dark:border-[#262a34] rounded-xl p-3 shadow-xs text-center">
               <span className="text-[11px] text-gray-500 dark:text-gray-400 font-medium block">Total Downtime</span>
-              <span className="text-lg font-bold text-rose-500 font-mono mt-0.5 block">{plantSummary.TotalDT}</span>
+              <span className="text-lg font-bold text-rose-500 font-mono mt-0.5 block">
+                {plantSummary.TotalDT ?? 0} <span className="text-xs font-sans font-medium text-gray-500 dark:text-gray-400">min</span>
+              </span>
             </div>
           </div>
         )}
@@ -367,6 +456,7 @@ export default function PlantHeadHome() {
               <thead className="sticky top-0 z-10 bg-gray-100 dark:bg-[#14161b] text-gray-700 dark:text-gray-300 font-bold uppercase tracking-wider text-[11px] border-b border-gray-200 dark:border-[#262a34]">
                 <tr>
                   <th rowSpan="2" className="py-3 px-3 border-r border-gray-200 dark:border-[#242832]">Machine</th>
+                  <th rowSpan="2" className="py-3 px-3 border-r border-gray-200 dark:border-[#242832] whitespace-nowrap">Machine Status</th>
                   <th rowSpan="2" className="py-3 px-3 border-r border-gray-200 dark:border-[#242832]">Running Mould</th>
                   <th rowSpan="2" className="py-3 px-3 text-center border-r border-gray-200 dark:border-[#242832]">OEE</th>
                   <th rowSpan="2" className="py-3 px-3 text-center border-r border-gray-200 dark:border-[#242832]">Availability</th>
@@ -401,6 +491,34 @@ export default function PlantHeadHome() {
                   const oee = Number(m.OEE) || 0;
                   const ach = Number(m.Achievement) || 0;
 
+                  // Machine status: RUNNING, IDLE, DOWN
+                  const rawMachStatus = (m.MachineStatus || "").toUpperCase();
+                  const machineStatus =
+                    rawMachStatus === "RUNNING" || rawMachStatus === "IDLE" || rawMachStatus === "DOWN"
+                      ? rawMachStatus
+                      : (Number(m.Actual) > 0 || oee > 0 ? "RUNNING" : (Number(m.TotalDT) > 60 ? "DOWN" : "IDLE"));
+
+                  // Mould Maintenance Status: OVERDUE > DUE > DONE
+                  const mouldRaw = (m.RunningMould || "").trim();
+                  const hasMould = mouldRaw && mouldRaw !== "-" && mouldRaw.toLowerCase() !== "null";
+                  let mouldStatus = m.MouldStatus || null;
+                  if (hasMould && !mouldStatus) {
+                    const norm = (s) => {
+                      if (!s) return null;
+                      const str = String(s).toUpperCase().trim();
+                      if (str.includes("OVERDUE") || str === "3") return "OVERDUE";
+                      if (str.includes("DUE") || str === "2") return "DUE";
+                      if (str.includes("DONE") || str.includes("NORMAL") || str.includes("COMPLETE") || str === "1" || str === "7") return "DONE";
+                      return null;
+                    };
+                    const p = norm(m.PMStatus);
+                    const h = norm(m.HCStatus);
+                    if (p === "OVERDUE" || h === "OVERDUE") mouldStatus = "OVERDUE";
+                    else if (p === "DUE" || h === "DUE") mouldStatus = "DUE";
+                    else if (p === "DONE" || h === "DONE") mouldStatus = "DONE";
+                    else mouldStatus = "DONE";
+                  }
+
                   return (
                     <tr
                       key={i}
@@ -409,8 +527,11 @@ export default function PlantHeadHome() {
                       <td className="py-2.5 px-3 font-sans font-bold text-gray-900 dark:text-white border-r border-gray-200 dark:border-[#222630]">
                         {m.Machine}
                       </td>
-                      <td className="py-2.5 px-3 font-sans text-gray-600 dark:text-gray-400 border-r border-gray-200 dark:border-[#222630] truncate max-w-[160px]">
-                        {m.RunningMould || "-"}
+                      <td className="py-2.5 px-3 border-r border-gray-200 dark:border-[#222630] whitespace-nowrap">
+                        {renderMachineStatusBadge(machineStatus)}
+                      </td>
+                      <td className="py-2.5 px-3 font-sans border-r border-gray-200 dark:border-[#222630] max-w-[220px]">
+                        {renderRunningMouldBadge(mouldRaw, mouldStatus)}
                       </td>
                       <td className="py-2.5 px-3 text-center border-r border-gray-200 dark:border-[#222630]">
                         <span className={`font-bold ${oee >= 70 ? "text-emerald-400" : oee > 0 ? "text-yellow-400" : "text-gray-400"}`}>
@@ -449,22 +570,28 @@ export default function PlantHeadHome() {
                         {m.Rejected || 0}
                       </td>
                       <td className="py-2.5 px-2 text-center border-r border-gray-200 dark:border-[#222630] text-gray-600 dark:text-gray-400">
-                        {m.Man || 0}
+                        {Number(m.Man) > 0 ? <span className="font-bold text-amber-500">{m.Man}</span> : <span className="text-gray-400">0</span>}
                       </td>
                       <td className="py-2.5 px-2 text-center border-r border-gray-200 dark:border-[#222630] text-gray-600 dark:text-gray-400">
-                        {m.Material || 0}
+                        {Number(m.Material) > 0 ? <span className="font-bold text-amber-500">{m.Material}</span> : <span className="text-gray-400">0</span>}
                       </td>
                       <td className="py-2.5 px-2 text-center border-r border-gray-200 dark:border-[#222630] text-gray-600 dark:text-gray-400">
-                        {m.Method || 0}
+                        {Number(m.Method) > 0 ? <span className="font-bold text-amber-500">{m.Method}</span> : <span className="text-gray-400">0</span>}
                       </td>
                       <td className="py-2.5 px-2 text-center border-r border-gray-200 dark:border-[#222630] text-gray-600 dark:text-gray-400">
-                        {m.MachineDT || 0}
+                        {Number(m.MachineDT) > 0 ? <span className="font-bold text-amber-500 dark:text-amber-400">{m.MachineDT}</span> : <span className="text-gray-400">0</span>}
                       </td>
                       <td className="py-2.5 px-2 text-center border-r border-gray-200 dark:border-[#222630] text-gray-600 dark:text-gray-400">
-                        {m.Mould || 0}
+                        {Number(m.Mould) > 0 ? <span className="font-bold text-amber-500 dark:text-amber-400">{m.Mould}</span> : <span className="text-gray-400">0</span>}
                       </td>
-                      <td className="py-2.5 px-2 text-center font-bold text-rose-500">
-                        {m.TotalDT || 0}
+                      <td className="py-2.5 px-2 text-center font-bold">
+                        {Number(m.TotalDT) > 0 ? (
+                          <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-bold bg-rose-500/15 text-rose-500 dark:text-rose-400">
+                            {m.TotalDT}
+                          </span>
+                        ) : (
+                          <span className="text-gray-400">0</span>
+                        )}
                       </td>
                     </tr>
                   );

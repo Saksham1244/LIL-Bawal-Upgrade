@@ -35,6 +35,8 @@ export default function DashboardHome() {
   const [shift, setShift] = useState('All');
   const [selectedLine, setSelectedLine] = useState('All');
   const [loading, setLoading] = useState(false);
+  const [trendLoading, setTrendLoading] = useState(false);
+  const isFirstMount = React.useRef(true);
 
   const showShift = period !== 'Shift';
 
@@ -140,28 +142,7 @@ export default function DashboardHome() {
         rollover,
       });
 
-      // 4. Fetch Hourly / Period Trend
-      const hourlyRes = await axios.get(`${BASE}/PerfMachine/GetHourlyExpActualQtyTrend`, {
-        params: { Mode: modeParam, StartDate: startDate, EndDate: endDate, Shift: shiftParam },
-      });
-      if (hourlyRes.data?.success && Array.isArray(hourlyRes.data.data) && hourlyRes.data.data.length > 0) {
-        const mapped = hourlyRes.data.data.map((item) => {
-          let label = item.HourStart ? `${item.HourStart}` : item.TrendGroup || item.Day || item.TimeGroup || '';
-          if (label === 'A') label = 'Shift 1';
-          else if (label === 'B') label = 'Shift 2';
-          else if (label === 'C') label = 'Shift 3';
-          return {
-            time: label,
-            actual: Number(item.ActualQuantity || 0),
-            target: Number(item.ExpectedQuantity || 0),
-          };
-        });
-        setHourlyTrend(mapped);
-      } else {
-        setHourlyTrend([]);
-      }
-
-      // 5. Fetch Downtime Pareto
+      // 4. Fetch Downtime Pareto
       const paretoRes = await axios.get(`${BASE}/DowntimeHome/GetPlantTop5Downtimes`, {
         params: { mode: modeParam, startDate, endDate, shift: shiftParam },
       });
@@ -183,15 +164,20 @@ export default function DashboardHome() {
         setLossPareto([]);
       }
 
-      // 6. Fetch Machine Table
+      // 5. Fetch Machine Table
+      let loadedMachines = [];
       const machineRes = await axios.get(`${BASE}/PerformanceHome/machinewise`, {
         params: { mode: modeParam, startDate, endDate, shift: shiftParam },
       });
       if (machineRes.data?.success && Array.isArray(machineRes.data.data)) {
-        setMachineTable(machineRes.data.data);
+        loadedMachines = machineRes.data.data;
+        setMachineTable(loadedMachines);
       } else {
         setMachineTable([]);
       }
+
+      // 6. Fetch Hourly / Period Trend (passing currently selected machine)
+      await fetchHourlyTrend(selectedLine, loadedMachines);
 
       // 7. Fetch Moulds
       const mouldsRes = await axios.get(`${BASE}/MouldSummary/MouldName`);
@@ -205,9 +191,87 @@ export default function DashboardHome() {
     }
   };
 
+  const fetchHourlyTrend = async (currentLine = selectedLine, machinesList = null) => {
+    setTrendLoading(true);
+    try {
+      const modeParam =
+        period === 'Shift'
+          ? 'SHIFT'
+          : period === 'Day'
+          ? 'DAY'
+          : period === 'Week'
+          ? 'WEEK'
+          : period === 'Month'
+          ? 'MONTH'
+          : 'DATE';
+
+      const shiftParam =
+        showShift
+          ? shift === 'All'
+            ? null
+            : shift === 'Shift 1'
+            ? 'A'
+            : shift === 'Shift 2'
+            ? 'B'
+            : shift === 'Shift 3'
+            ? 'C'
+            : shift
+          : null;
+
+      let eqParam = null;
+      if (currentLine && currentLine !== 'All') {
+        const listToSearch = (machinesList && machinesList.length > 0) ? machinesList : machineTable;
+        const found = listToSearch.find((m) => m.EquipmentName === currentLine);
+        eqParam = found?.EquipmentID || currentLine;
+      }
+
+      const hourlyRes = await axios.get(`${BASE}/PerfMachine/GetHourlyExpActualQtyTrend`, {
+        params: {
+          Mode: modeParam,
+          StartDate: startDate,
+          EndDate: endDate,
+          Shift: shiftParam,
+          EquipmentID: eqParam,
+          EquipmentName: currentLine !== 'All' ? currentLine : null,
+        },
+      });
+
+      if (hourlyRes.data?.success && Array.isArray(hourlyRes.data.data) && hourlyRes.data.data.length > 0) {
+        const mapped = hourlyRes.data.data.map((item) => {
+          let label = item.HourStart ? `${item.HourStart}` : item.TrendGroup || item.Day || item.TimeGroup || '';
+          if (label === 'A') label = 'Shift 1';
+          else if (label === 'B') label = 'Shift 2';
+          else if (label === 'C') label = 'Shift 3';
+          return {
+            time: label,
+            actual: Number(item.ActualQuantity || 0),
+            target: Number(item.ExpectedQuantity || 0),
+          };
+        });
+        setHourlyTrend(mapped);
+      } else {
+        setHourlyTrend([]);
+      }
+    } catch (err) {
+      console.error('Hourly trend error:', err);
+      setHourlyTrend([]);
+    } finally {
+      setTrendLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchDashboardData();
   }, [period, startDate, endDate, shift]);
+
+  // Re-fetch trend whenever machine filter changes
+  useEffect(() => {
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      return;
+    }
+    fetchHourlyTrend(selectedLine);
+  }, [selectedLine]);
 
   const filteredMachines = useMemo(() => {
     return machineTable.filter((m) => {
@@ -415,7 +479,7 @@ export default function DashboardHome() {
             {/* 4. MACHINE */}
             <div>
               <label className="text-[10px] font-extrabold uppercase text-slate-400 block mb-1 tracking-wider">
-                MACHINE
+                MACHINE {selectedLine !== 'All' && <span className="text-sky-600 font-bold">({selectedLine})</span>}
               </label>
               <div className="flex items-center bg-white px-3 py-1.5 rounded-lg border border-slate-200 text-xs text-slate-700 shadow-2xs focus-within:border-sky-500">
                 <select
@@ -423,9 +487,9 @@ export default function DashboardHome() {
                   onChange={(e) => setSelectedLine(e.target.value)}
                   className="bg-transparent border-none outline-none p-0 text-xs font-semibold cursor-pointer w-full"
                 >
-                  <option value="All">All Machines</option>
+                  <option value="All">All Machines (19)</option>
                   {machineTable.map((m, i) => (
-                    <option key={i} value={m.EquipmentName}>
+                    <option key={m.EquipmentID || m.EquipmentName || i} value={m.EquipmentName}>
                       {m.EquipmentName}
                     </option>
                   ))}
@@ -506,13 +570,35 @@ export default function DashboardHome() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 mb-4">
           {/* CHART 1: PLAN VS ACTUAL BY PERIOD */}
           <div className="lg:col-span-7 bg-white rounded-xl border border-slate-200 p-4 shadow-2xs flex flex-col justify-between">
-            <div className="mb-2">
-              <h3 className="text-xs font-bold text-slate-800">
-                Plan vs Actual by Period
-              </h3>
+            <div className="mb-2 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <h3 className="text-xs font-bold text-slate-800">
+                  Plan vs Actual by Period
+                </h3>
+                <span
+                  className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider transition-colors ${
+                    selectedLine !== 'All'
+                      ? 'bg-sky-50 text-[#0284c7] border border-sky-200'
+                      : 'bg-slate-100 text-slate-600 border border-slate-200'
+                  }`}
+                >
+                  {selectedLine !== 'All' ? selectedLine : 'All 19 Machines'}
+                </span>
+              </div>
+              {trendLoading && (
+                <span className="text-[10px] text-sky-600 font-bold animate-pulse flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-ping" />
+                  Updating...
+                </span>
+              )}
             </div>
 
-            <div className="h-56 w-full">
+            <div className="h-56 w-full relative">
+              {trendLoading && (
+                <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] z-10 flex items-center justify-center">
+                  <span className="text-xs font-bold text-sky-600 animate-pulse">Loading machine trend...</span>
+                </div>
+              )}
               {hourlyTrend.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart
@@ -563,7 +649,7 @@ export default function DashboardHome() {
                 </ResponsiveContainer>
               ) : (
                 <div className="h-full flex items-center justify-center text-slate-400 text-xs">
-                  No hourly production trend records found for this period
+                  {trendLoading ? 'Loading machine data...' : `No production trend records found for ${selectedLine !== 'All' ? selectedLine : 'this period'}`}
                 </div>
               )}
             </div>

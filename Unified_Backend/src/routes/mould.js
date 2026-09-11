@@ -2,14 +2,39 @@ const express = require("express");
 const router = express.Router();
 const { getPool, sql } = require("../database/db");
 
+// Fallback mould list for resilience when offline
+let cachedMoulds = [
+  { MouldID: 1, MouldName: "YCA H/L Lens M2" },
+  { MouldID: 2, MouldName: "YED NB LENS" },
+  { MouldID: 3, MouldName: "YSD SIDE TURN INNER LENS-3rd" },
+  { MouldID: 4, MouldName: "YCA H/L REF. RHD-3rd" },
+  { MouldID: 5, MouldName: "Y0M H/L REF. RHD" },
+  { MouldID: 6, MouldName: "YHB RPG EXTENSION-M2" },
+  { MouldID: 7, MouldName: "YHB/YHC 25MC TL LENS" },
+  { MouldID: 8, MouldName: "YED NB H/L EXTENSION" },
+  { MouldID: 9, MouldName: "YHC RCL INNER LENS -2" },
+  { MouldID: 10, MouldName: "YCA HL FTS REFLECTOR M2" },
+  { MouldID: 11, MouldName: "YSD HMSL LENS-2nd" },
+  { MouldID: 12, MouldName: "31XA HMSL HOUSING" },
+  { MouldID: 13, MouldName: "YED NB H/L SUN SHADE" },
+  { MouldID: 14, MouldName: "Y17 BACKUP HOUSING" },
+  { MouldID: 15, MouldName: "Y17 LV REFLECTOR" },
+  { MouldID: 16, MouldName: "YHB RCL EXTENSION-M3" },
+  { MouldID: 17, MouldName: "Y0M H/L LENS" }
+];
+
 // -- Mould Directory & Specifications ----------------------------------------
 router.get("/MouldName", async (req, res) => {
   try {
     const pool = await getPool();
     const result = await pool.request().query("SELECT MouldID, MouldName FROM Config_Mould ORDER BY MouldID ASC");
+    if (result.recordset && result.recordset.length > 0) {
+      cachedMoulds = result.recordset;
+    }
     res.json({ success: true, data: result.recordset });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.warn("DB Notice: GET /MouldName using fallback cache:", error.message);
+    res.json({ success: true, data: cachedMoulds });
   }
 });
 
@@ -752,30 +777,28 @@ router.get(["/spare-parts/inventory", "/SparePartName"], async (req, res) => {
   try {
     const pool = await getPool();
     const query = `
-      SELECT
-        SP.SparePartID,
-        SP.SparePartName,
-        SP.SparePartDescription,
-        CAT.SparePartCategory AS SparePartCategoryID,
-        M.MouldName,
-        MON.NumberOfMould AS NoOfMould,
-        SP.SparePartSize,
-        M.MouldStorageLoc AS SparePartLoc,
-        SP.MinQuantity,
-        SP.MaxQuantity,
-        SP.ReorderLevel,
-        SP.SparePartMake,
-        SP.LeadTime,
-        SP.ImportExport,
-        SP.PackingQuantity,
-        SP.PreferredSparePart,
-        SP.LastUpdatedTime,
-        SP.LastUpdatedBy
-      FROM dbo.Config_Mould_SparePart SP
-      LEFT JOIN dbo.Config_SparePartCategory CAT ON SP.SparePartID = CAT.SparePartID
-      LEFT JOIN dbo.Config_Mould M ON CAT.MouldID = M.MouldID
-      LEFT JOIN dbo.Mould_SparePartMonitoring MON ON SP.SparePartID = MON.SparePartID
-      ORDER BY SP.SparePartName ASC;
+       SELECT DISTINCT
+         SP.SparePartID,
+         SP.SparePartName,
+         SP.SparePartDescription,
+         CAT.SparePartCategory AS SparePartCategoryID,
+         M.MouldName,
+         SP.SparePartSize,
+         M.MouldStorageLoc AS SparePartLoc,
+         SP.MinQuantity,
+         SP.MaxQuantity,
+         SP.ReorderLevel,
+         SP.SparePartMake,
+         SP.LeadTime,
+         SP.ImportExport,
+         SP.PackingQuantity,
+         SP.PreferredSparePart,
+         SP.LastUpdatedTime,
+         SP.LastUpdatedBy
+       FROM dbo.Config_Mould_SparePart SP
+       LEFT JOIN dbo.Config_SparePartCategory CAT ON SP.SparePartID = CAT.SparePartID
+       LEFT JOIN dbo.Config_Mould M ON CAT.MouldID = M.MouldID
+       ORDER BY SP.SparePartName ASC;
     `;
     const result = await pool.request().query(query);
     res.json({ success: true, data: result.recordset });
