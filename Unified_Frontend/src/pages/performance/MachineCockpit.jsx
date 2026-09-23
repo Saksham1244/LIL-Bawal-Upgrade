@@ -405,43 +405,10 @@ export default function MachineCockpit() {
                         </span>
                       </div>
                     </div>
-                  </div>
+</div>
 
-                  {/* ADDITIONAL SECTION */}
-                  <div className="mt-3">
-                    <span className="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider block mb-1">
-                      ADDITIONAL
-                    </span>
-                    <div className="grid grid-cols-4 gap-2">
-                      <div>
-                        <span className="text-[9px] text-slate-400 font-semibold block">ENERGY</span>
-                        <span className="text-[11px] font-bold text-slate-700 font-mono">
-                          {machine.additional?.energy ?? 0} kWh/kg
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-[9px] text-slate-400 font-semibold block">STD CYCLE</span>
-                        <span className="text-[11px] font-bold text-slate-700 font-mono">
-                          {machine.additional?.stdCycle ?? 0}s
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-[9px] text-slate-400 font-semibold block">AVG CYCLE</span>
-                        <span className="text-[11px] font-bold text-slate-700 font-mono">
-                          {machine.additional?.avgCycle ?? 0}s
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-[9px] text-slate-400 font-semibold block">SPEED</span>
-                        <span className="text-[11px] font-bold text-slate-700 font-mono">
-                          {machine.additional?.speed ?? 0} CPH
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* FOOTER ACTION */}
-                  <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                   {/* FOOTER ACTION */}
+                   <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
                     <span
                       className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
                         isMouldLoaded(machine.mould, machine.currentJob)

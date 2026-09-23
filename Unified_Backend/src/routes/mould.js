@@ -523,6 +523,27 @@ router.get(["/history/pm/checkpoint-header", "/PmHeaderDetails"], async (req, re
       .input("MouldID", sql.NVarChar(100), mouldID || null)
       .execute("PM_Dashboard_HeaderDetails_PMCheckpointReport");
 
+    const headerRecord = result.recordset?.[0] || {};
+
+    try {
+      const histRes = await pool
+        .request()
+        .input("CheckListID", sql.Int, parseInt(checkListID || 1))
+        .input("Instance", sql.Int, parseInt(instance || 1))
+        .input("MouldID", sql.NVarChar(100), mouldID || null)
+        .execute("DASHBOARD_PM_CheckListHistory");
+
+      if (histRes.recordset && histRes.recordset.length > 0) {
+        const histRow = histRes.recordset[0];
+        if (!headerRecord.CheckListName) headerRecord.CheckListName = histRow.CheckListName || "";
+        if (!headerRecord.MaterialName) headerRecord.MaterialName = histRow.MaterialName || "";
+        if (!headerRecord.AtMouldLife) headerRecord.AtMouldLife = histRow.AtMouldLife || "";
+        if (!headerRecord.UserName) headerRecord.UserName = histRow.UserName || "";
+      }
+    } catch (histErr) {
+      console.warn("Failed to supplement header details from history:", histErr.message);
+    }
+
     res.json({ success: true, data: result.recordset });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -616,6 +637,27 @@ router.get(["/history/hc/checkpoint-header", "/HCHeaderDetails", "/HcHeaderDetai
       .input("Instance", sql.Int, parseInt(instance || 1))
       .input("MouldID", sql.NVarChar(100), mouldID || null)
       .execute("HC_Dashboard_HeaderDetails_HCCheckpointReport");
+
+    const headerRecord = result.recordset?.[0] || {};
+
+    try {
+      const histRes = await pool
+        .request()
+        .input("CheckListID", sql.Int, parseInt(checkListID || 1))
+        .input("Instance", sql.Int, parseInt(instance || 1))
+        .input("MouldID", sql.NVarChar(100), mouldID || null)
+        .execute("DASHBOARD_HC_CheckListHistory");
+
+      if (histRes.recordset && histRes.recordset.length > 0) {
+        const histRow = histRes.recordset[0];
+        if (!headerRecord.CheckListName) headerRecord.CheckListName = histRow.CheckListName || "";
+        if (!headerRecord.MaterialName) headerRecord.MaterialName = histRow.MaterialName || "";
+        if (!headerRecord.AtMouldLife) headerRecord.AtMouldLife = histRow.AtMouldLife || "";
+        if (!headerRecord.UserName) headerRecord.UserName = histRow.UserName || "";
+      }
+    } catch (histErr) {
+      console.warn("Failed to supplement HC header details from history:", histErr.message);
+    }
 
     res.json({ success: true, data: result.recordset });
   } catch (error) {

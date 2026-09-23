@@ -41,6 +41,10 @@ export default function PMCheckPointReport() {
   const [activeMouldName, setActiveMouldName] = useState(searchParams.get("mouldName") || "");
   const [activeInstance, setActiveInstance] = useState(searchParams.get("instance") || "");
   const [activeCheckListID, setActiveCheckListID] = useState(searchParams.get("checkListID") || "");
+  const [searchCheckListName, setSearchCheckListName] = useState(searchParams.get("checkListName") || "");
+  const [searchMaterialName, setSearchMaterialName] = useState(searchParams.get("materialName") || "");
+  const [searchAtMouldLife, setSearchAtMouldLife] = useState(searchParams.get("atMouldLife") || "");
+  const [searchUserName, setSearchUserName] = useState(searchParams.get("userName") || "");
 
   // Report Data
   const [headerData, setHeaderData] = useState({});
@@ -99,6 +103,8 @@ export default function PMCheckPointReport() {
             checkListID: item.CheckListID,
             mouldID: item.MouldID,
             mouldName: item.MouldName,
+            checkListName: item.CheckListName,
+            materialName: item.MaterialName,
             atMouldLife: item.AtMouldLife,
             partName: item.PartName,
             userName: item.UserName,
@@ -153,7 +159,18 @@ export default function PMCheckPointReport() {
           }
         );
         if (hRes.data?.success && hRes.data.data) {
-          setHeaderData(hRes.data.data[0] || {});
+          const headerFromApi = hRes.data.data[0] || {};
+          const mergedHeader = { ...headerFromApi };
+          if (!mergedHeader.CheckListName && instanceList.length > 0) {
+            const match = instanceList.find((i) => String(i.instance) === String(activeInstance));
+            if (match) {
+              mergedHeader.CheckListName = match.checkListName || "";
+              mergedHeader.MaterialName = match.materialName || "";
+              mergedHeader.AtMouldLife = match.atMouldLife || "";
+              mergedHeader.UserName = match.userName || "";
+            }
+          }
+          setHeaderData(mergedHeader);
         }
       } catch (err) {
         console.error("Error loading header details:", err);
@@ -206,6 +223,20 @@ export default function PMCheckPointReport() {
 
     fetchDetails();
   }, [activeMouldID, activeInstance, activeCheckListID]);
+
+  useEffect(() => {
+    if (!activeInstance || instanceList.length === 0) return;
+    setHeaderData((prev) => {
+      const match = instanceList.find((i) => String(i.instance) === String(activeInstance));
+      if (!match) return prev;
+      const merged = { ...prev };
+      if (!merged.CheckListName) merged.CheckListName = match.checkListName || "";
+      if (!merged.MaterialName) merged.MaterialName = match.materialName || "";
+      if (!merged.AtMouldLife) merged.AtMouldLife = match.atMouldLife || "";
+      if (!merged.UserName) merged.UserName = match.userName || "";
+      return merged;
+    });
+  }, [instanceList, activeInstance]);
 
   // Handlers
   const handleMouldSelect = (option) => {
@@ -481,7 +512,7 @@ export default function PMCheckPointReport() {
             <div className="bg-slate-50  border border-slate-200  p-2.5 rounded-xl">
               <span className="text-[10px] text-slate-400 block">Checklist</span>
               <span className="font-bold text-slate-800  truncate block mt-0.5">
-                {headerData.CheckListName || "--"}
+                {headerData.CheckListName || searchCheckListName || "--"}
               </span>
             </div>
 
@@ -495,7 +526,7 @@ export default function PMCheckPointReport() {
             <div className="bg-slate-50  border border-slate-200  p-2.5 rounded-xl">
               <span className="text-[10px] text-slate-400 block">Material</span>
               <span className="font-bold text-slate-800  truncate block mt-0.5">
-                {headerData.MaterialName || "--"}
+                {headerData.MaterialName || searchMaterialName || "--"}
               </span>
             </div>
 
@@ -516,7 +547,7 @@ export default function PMCheckPointReport() {
             <div className="bg-slate-50  border border-slate-200  p-2.5 rounded-xl">
               <span className="text-[10px] text-slate-400 block">Mould Life</span>
               <span className="font-bold text-emerald-400 font-mono block mt-0.5">
-                {headerData.AtMouldLife || headerData.MouldLife || "--"}
+                {headerData.AtMouldLife || headerData.MouldLife || searchAtMouldLife || "--"}
               </span>
             </div>
 
@@ -537,7 +568,7 @@ export default function PMCheckPointReport() {
             <div className="bg-slate-50  border border-slate-200  p-2.5 rounded-xl">
               <span className="text-[10px] text-slate-400 block">User Name</span>
               <span className="font-semibold text-slate-800  truncate block mt-0.5">
-                {headerData.UserName || "--"}
+                {headerData.UserName || searchUserName || "--"}
               </span>
             </div>
 
