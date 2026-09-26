@@ -117,6 +117,11 @@ export default function PMCheckpointImages() {
             instance: item.Instance,
             mouldID: item.MouldID,
             mouldName: item.MouldName,
+            checkListID: item.CheckListID,
+            checkListName: item.CheckListName,
+            materialName: item.MaterialName,
+            atMouldLife: item.AtMouldLife,
+            userName: item.UserName,
           }));
 
           setInstanceList(instances);
@@ -258,7 +263,7 @@ export default function PMCheckpointImages() {
                 type="button"
                 onClick={() =>
                   navigate(
-                    `/PMCheckPointReport?mouldName=${encodeURIComponent(activeMouldName)}&instance=${activeInstance}&mouldID=${activeMouldID}`
+                    `/PMCheckPointReport?mouldName=${encodeURIComponent(activeMouldName)}&instance=${activeInstance}&mouldID=${activeMouldID}&checkListName=${encodeURIComponent(selectedInstanceOption?.checkListName || "")}&materialName=${encodeURIComponent(selectedInstanceOption?.materialName || "")}&atMouldLife=${selectedInstanceOption?.atMouldLife || ""}&userName=${encodeURIComponent(selectedInstanceOption?.userName || "")}`
                   )
                 }
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100  hover:bg-gray-200  text-slate-700  transition-colors"

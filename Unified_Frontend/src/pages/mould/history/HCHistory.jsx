@@ -214,7 +214,7 @@ const BASE = getBackendBaseUrl();
         mouldName: r.MouldName ?? "",
         materialName: r.MaterialName ?? "",
         userId: r.UserID ?? "",
-        userName: r.userName ?? "",
+        userName: r.UserName ?? "",
         hcStatus: r.HCStatus ?? "",
         instance: r.Instance ?? "",
         remark: r.Remark ?? "",

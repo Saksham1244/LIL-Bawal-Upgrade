@@ -452,37 +452,37 @@ export default function PlantHeadHome() {
           </div>
 
           <div className="overflow-x-auto max-h-[65vh]">
-            <table ref={tableRef} className="w-full text-xs text-left">
+            <table ref={tableRef} className="w-full text-xs text-left table-fixed">
               <thead className="sticky top-0 z-10 bg-gray-100 dark:bg-[#14161b] text-gray-700 dark:text-gray-300 font-bold uppercase tracking-wider text-[11px] border-b border-gray-200 dark:border-[#262a34]">
                 <tr>
-                  <th rowSpan="2" className="py-3 px-3 border-r border-gray-200 dark:border-[#242832]">Machine</th>
-                  <th rowSpan="2" className="py-3 px-3 border-r border-gray-200 dark:border-[#242832] whitespace-nowrap">Machine Status</th>
-                  <th rowSpan="2" className="py-3 px-3 border-r border-gray-200 dark:border-[#242832]">Running Mould</th>
-                  <th rowSpan="2" className="py-3 px-3 text-center border-r border-gray-200 dark:border-[#242832]">OEE</th>
-                  <th rowSpan="2" className="py-3 px-3 text-center border-r border-gray-200 dark:border-[#242832]">Availability</th>
-                  <th rowSpan="2" className="py-3 px-3 text-center border-r border-gray-200 dark:border-[#242832]">Performance</th>
-                  <th rowSpan="2" className="py-3 px-3 text-center border-r border-gray-200 dark:border-[#242832]">Quality</th>
-                  <th colSpan="3" className="py-2 px-3 text-center border-b border-r border-gray-200 dark:border-[#242832] bg-emerald-500/10 text-emerald-500">
+                  <th rowSpan="2" className="py-3 px-2 border-r border-gray-200 dark:border-[#242832] w-[90px]">Machine</th>
+                  <th rowSpan="2" className="py-3 px-2 border-r border-gray-200 dark:border-[#242832] whitespace-nowrap w-[80px]">Machine Status</th>
+                  <th rowSpan="2" className="py-3 px-2 border-r border-gray-200 dark:border-[#242832] w-[80px]">Running Mould</th>
+                  <th rowSpan="2" className="py-3 px-2 text-center border-r border-gray-200 dark:border-[#242832] w-[50px]">OEE</th>
+                  <th rowSpan="2" className="py-3 px-2 text-center border-r border-gray-200 dark:border-[#242832] w-[55px]">Availability</th>
+                  <th rowSpan="2" className="py-3 px-2 text-center border-r border-gray-200 dark:border-[#242832] w-[55px]">Performance</th>
+                  <th rowSpan="2" className="py-3 px-2 text-center border-r border-gray-200 dark:border-[#242832] w-[50px]">Quality</th>
+                  <th colSpan="3" className="py-2 px-2 text-center border-b border-r border-gray-200 dark:border-[#242832] bg-emerald-500/10 text-emerald-500 w-[130px]">
                     Production Output
                   </th>
-                  <th colSpan="1" className="py-2 px-3 text-center border-b border-r border-gray-200 dark:border-[#242832] bg-rose-500/10 text-rose-500">
+                  <th colSpan="1" className="py-2 px-2 text-center border-b border-r border-gray-200 dark:border-[#242832] bg-rose-500/10 text-rose-500 w-[40px]">
                     Rejection
                   </th>
-                  <th colSpan="6" className="py-2 px-3 text-center border-b border-gray-200 dark:border-[#242832] bg-amber-500/10 text-amber-500">
+                  <th colSpan="6" className="py-2 px-2 text-center border-b border-gray-200 dark:border-[#242832] bg-amber-500/10 text-amber-500 w-[275px]">
                     Downtime Losses (Minutes)
                   </th>
                 </tr>
                 <tr className="bg-gray-50 dark:bg-[#16191f] text-[10px]">
-                  <th className="py-2 px-2 text-center border-r border-gray-200 dark:border-[#242832]">Plan</th>
-                  <th className="py-2 px-2 text-center border-r border-gray-200 dark:border-[#242832]">Actual</th>
-                  <th className="py-2 px-2 text-center border-r border-gray-200 dark:border-[#242832]">Achieve %</th>
-                  <th className="py-2 px-2 text-center border-r border-gray-200 dark:border-[#242832]">Rej Qty</th>
-                  <th className="py-2 px-2 text-center border-r border-gray-200 dark:border-[#242832]">Man</th>
-                  <th className="py-2 px-2 text-center border-r border-gray-200 dark:border-[#242832]">Material</th>
-                  <th className="py-2 px-2 text-center border-r border-gray-200 dark:border-[#242832]">Method</th>
-                  <th className="py-2 px-2 text-center border-r border-gray-200 dark:border-[#242832]">Machine</th>
-                  <th className="py-2 px-2 text-center border-r border-gray-200 dark:border-[#242832]">Mould</th>
-                  <th className="py-2 px-2 text-center font-bold text-rose-400">Total DT</th>
+                  <th className="py-2 px-1.5 text-center border-r border-gray-200 dark:border-[#242832] w-[40px]">Plan</th>
+                  <th className="py-2 px-1.5 text-center border-r border-gray-200 dark:border-[#242832] w-[40px]">Actual</th>
+                  <th className="py-2 px-1.5 text-center border-r border-gray-200 dark:border-[#242832] w-[50px]">Achieve %</th>
+                  <th className="py-2 px-1.5 text-center border-r border-gray-200 dark:border-[#242832] w-[40px]">Rej Qty</th>
+                  <th className="py-2 px-1.5 text-center border-r border-gray-200 dark:border-[#242832] w-[40px]">Man</th>
+                  <th className="py-2 px-1.5 text-center border-r border-gray-200 dark:border-[#242832] w-[50px]">Material</th>
+                  <th className="py-2 px-1.5 text-center border-r border-gray-200 dark:border-[#242832] w-[45px]">Method</th>
+                  <th className="py-2 px-1.5 text-center border-r border-gray-200 dark:border-[#242832] w-[50px]">Machine</th>
+                  <th className="py-2 px-1.5 text-center border-r border-gray-200 dark:border-[#242832] w-[40px]">Mould</th>
+                  <th className="py-2 px-1.5 text-center font-bold text-rose-400 w-[50px]">Total DT</th>
                 </tr>
               </thead>
 
@@ -524,38 +524,38 @@ export default function PlantHeadHome() {
                       key={i}
                       className="hover:bg-gray-50 dark:hover:bg-[#1d2129] transition-colors"
                     >
-                      <td className="py-2.5 px-3 font-sans font-bold text-gray-900 dark:text-white border-r border-gray-200 dark:border-[#222630]">
+                      <td className="py-2 px-1.5 font-sans font-bold text-gray-900 dark:text-white border-r border-gray-200 dark:border-[#222630] w-[90px]">
                         {m.Machine}
                       </td>
-                      <td className="py-2.5 px-3 border-r border-gray-200 dark:border-[#222630] whitespace-nowrap">
+                      <td className="py-2 px-1.5 border-r border-gray-200 dark:border-[#222630] whitespace-nowrap w-[80px]">
                         {renderMachineStatusBadge(machineStatus)}
                       </td>
-                      <td className="py-2.5 px-3 font-sans border-r border-gray-200 dark:border-[#222630] max-w-[220px]">
+                      <td className="py-2 px-1.5 font-sans border-r border-gray-200 dark:border-[#222630] max-w-[80px] w-[80px]">
                         {renderRunningMouldBadge(mouldRaw, mouldStatus)}
                       </td>
-                      <td className="py-2.5 px-3 text-center border-r border-gray-200 dark:border-[#222630]">
+                      <td className="py-2 px-1.5 text-center border-r border-gray-200 dark:border-[#222630] w-[50px]">
                         <span className={`font-bold ${oee >= 70 ? "text-emerald-400" : oee > 0 ? "text-yellow-400" : "text-gray-400"}`}>
                           {m.OEE}%
                         </span>
                       </td>
-                      <td className="py-2.5 px-3 text-center border-r border-gray-200 dark:border-[#222630] text-gray-700 dark:text-gray-300">
+                      <td className="py-2 px-1.5 text-center border-r border-gray-200 dark:border-[#222630] text-gray-700 dark:text-gray-300 w-[55px]">
                         {m.Availability}%
                       </td>
-                      <td className="py-2.5 px-3 text-center border-r border-gray-200 dark:border-[#222630] text-gray-700 dark:text-gray-300">
+                      <td className="py-2 px-1.5 text-center border-r border-gray-200 dark:border-[#222630] text-gray-700 dark:text-gray-300 w-[55px]">
                         {m.Performance}%
                       </td>
-                      <td className="py-2.5 px-3 text-center border-r border-gray-200 dark:border-[#222630] text-gray-700 dark:text-gray-300">
+                      <td className="py-2 px-1.5 text-center border-r border-gray-200 dark:border-[#222630] text-gray-700 dark:text-gray-300 w-[50px]">
                         {m.Quality}%
                       </td>
-                      <td className="py-2.5 px-2 text-center border-r border-gray-200 dark:border-[#222630] text-gray-600 dark:text-gray-400">
+                      <td className="py-2 px-1 text-center border-r border-gray-200 dark:border-[#222630] text-gray-600 dark:text-gray-400 w-[40px]">
                         {m.Plan}
                       </td>
-                      <td className="py-2.5 px-2 text-center border-r border-gray-200 dark:border-[#222630] font-bold text-gray-900 dark:text-white">
+                      <td className="py-2 px-1 text-center border-r border-gray-200 dark:border-[#222630] font-bold text-gray-900 dark:text-white w-[40px]">
                         {m.Actual}
                       </td>
-                      <td className="py-2.5 px-2 text-center border-r border-gray-200 dark:border-[#222630]">
+                      <td className="py-2 px-1 text-center border-r border-gray-200 dark:border-[#222630] w-[50px]">
                         <span
-                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                          className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
                             ach >= 90
                               ? "bg-emerald-500/15 text-emerald-400"
                               : ach >= 70
@@ -566,27 +566,27 @@ export default function PlantHeadHome() {
                           {m.Achievement}%
                         </span>
                       </td>
-                      <td className="py-2.5 px-2 text-center border-r border-gray-200 dark:border-[#222630] text-rose-400 font-bold">
+                      <td className="py-2 px-1 text-center border-r border-gray-200 dark:border-[#222630] text-rose-400 font-bold w-[40px]">
                         {m.Rejected || 0}
                       </td>
-                      <td className="py-2.5 px-2 text-center border-r border-gray-200 dark:border-[#222630] text-gray-600 dark:text-gray-400">
+                      <td className="py-2 px-1 text-center border-r border-gray-200 dark:border-[#222630] text-gray-600 dark:text-gray-400 w-[40px]">
                         {Number(m.Man) > 0 ? <span className="font-bold text-amber-500">{m.Man}</span> : <span className="text-gray-400">0</span>}
                       </td>
-                      <td className="py-2.5 px-2 text-center border-r border-gray-200 dark:border-[#222630] text-gray-600 dark:text-gray-400">
+                      <td className="py-2 px-1 text-center border-r border-gray-200 dark:border-[#222630] text-gray-600 dark:text-gray-400 w-[50px]">
                         {Number(m.Material) > 0 ? <span className="font-bold text-amber-500">{m.Material}</span> : <span className="text-gray-400">0</span>}
                       </td>
-                      <td className="py-2.5 px-2 text-center border-r border-gray-200 dark:border-[#222630] text-gray-600 dark:text-gray-400">
+                      <td className="py-2 px-1 text-center border-r border-gray-200 dark:border-[#222630] text-gray-600 dark:text-gray-400 w-[45px]">
                         {Number(m.Method) > 0 ? <span className="font-bold text-amber-500">{m.Method}</span> : <span className="text-gray-400">0</span>}
                       </td>
-                      <td className="py-2.5 px-2 text-center border-r border-gray-200 dark:border-[#222630] text-gray-600 dark:text-gray-400">
+                      <td className="py-2 px-1 text-center border-r border-gray-200 dark:border-[#222630] text-gray-600 dark:text-gray-400 w-[50px]">
                         {Number(m.MachineDT) > 0 ? <span className="font-bold text-amber-500 dark:text-amber-400">{m.MachineDT}</span> : <span className="text-gray-400">0</span>}
                       </td>
-                      <td className="py-2.5 px-2 text-center border-r border-gray-200 dark:border-[#222630] text-gray-600 dark:text-gray-400">
+                      <td className="py-2 px-1 text-center border-r border-gray-200 dark:border-[#222630] text-gray-600 dark:text-gray-400 w-[40px]">
                         {Number(m.Mould) > 0 ? <span className="font-bold text-amber-500 dark:text-amber-400">{m.Mould}</span> : <span className="text-gray-400">0</span>}
                       </td>
-                      <td className="py-2.5 px-2 text-center font-bold">
+                      <td className="py-2 px-1 text-center font-bold w-[50px]">
                         {Number(m.TotalDT) > 0 ? (
-                          <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-bold bg-rose-500/15 text-rose-500 dark:text-rose-400">
+                          <span className="inline-block px-1.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-500/15 text-rose-500 dark:text-rose-400">
                             {m.TotalDT}
                           </span>
                         ) : (
