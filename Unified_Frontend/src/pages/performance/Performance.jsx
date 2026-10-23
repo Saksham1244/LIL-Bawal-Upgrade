@@ -172,7 +172,7 @@ export default function Performance() {
             </div>
 
             <div className="text-center pt-2 border-t border-gray-100 dark:border-[#222632] text-xs text-gray-400">
-              Target: <span className="font-bold text-gray-300">70%</span> | Shift {activeShift}
+              Shift {activeShift}
             </div>
           </div>
 
@@ -181,7 +181,7 @@ export default function Performance() {
             <div className="flex items-start justify-between">
               <div>
                 <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">
-                  Plant Availability
+                  Availability
                 </span>
                 <div className="text-2xl font-black text-gray-900 dark:text-white font-mono mt-1">
                   {availabilityPct}%
@@ -234,7 +234,7 @@ export default function Performance() {
             <div className="flex items-start justify-between">
               <div>
                 <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">
-                  Performance (Output)
+                  performance
                 </span>
                 <div className="text-2xl font-black text-gray-900 dark:text-white font-mono mt-1">
                   {performancePct}%
@@ -293,15 +293,12 @@ export default function Performance() {
             <div className="flex items-start justify-between">
               <div>
                 <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">
-                  Quality Yield Rate
+                  quality
                 </span>
                 <div className="text-2xl font-black text-gray-900 dark:text-white font-mono mt-1">
                   {qualityPct}%
                 </div>
               </div>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400">
-                Grade A Parts
-              </span>
             </div>
 
             <div className="h-40 w-full flex items-center justify-center relative mt-2">
@@ -370,7 +367,13 @@ export default function Performance() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {plantData.map((machine, idx) => {
               const mOEE = Number(machine.OEEPercent) || 0;
-              const isRunning = Number(machine.ActualQuantity) > 0 || mOEE > 0;
+              const mDowntime = Number(machine.Downtime) || 0;
+              const rawStatus = (machine.MachineStatus || "").toUpperCase();
+              const machineStatus = rawStatus === "RUNNING" || rawStatus === "IDLE" || rawStatus === "DOWN"
+                ? rawStatus
+                : (Number(machine.ActualQuantity) > 0 || mOEE > 0 ? "RUNNING" : (mDowntime > 60 ? "DOWN" : "IDLE"));
+              const isRunning = machineStatus === "RUNNING";
+              const isDown = machineStatus === "DOWN";
 
               return (
                 <div
@@ -394,11 +397,13 @@ export default function Performance() {
                       className={`text-[9px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${
                         isRunning
                           ? "bg-emerald-500/15 text-emerald-400"
-                          : "bg-rose-500/15 text-rose-400"
+                          : isDown
+                          ? "bg-rose-500/15 text-rose-400"
+                          : "bg-slate-500/15 text-slate-400"
                       }`}
                     >
-                      <span className={`w-1.5 h-1.5 rounded-full ${isRunning ? "bg-emerald-400 animate-pulse" : "bg-rose-400"}`}></span>
-                      {isRunning ? "RUNNING" : "STOPPED"}
+                      <span className={`w-1.5 h-1.5 rounded-full ${isRunning ? "bg-emerald-400 animate-pulse" : isDown ? "bg-rose-400" : "bg-slate-400"}`}></span>
+                      {isRunning ? "RUNNING" : isDown ? "DOWN" : "IDLE"}
                     </span>
                   </div>
 

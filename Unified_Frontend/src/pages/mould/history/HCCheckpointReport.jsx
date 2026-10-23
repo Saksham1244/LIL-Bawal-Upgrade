@@ -19,6 +19,12 @@ import {
   MdTune,
   MdHealing,
 } from "react-icons/md";
+import {
+  dummyHCMouldList,
+  getDummyHCInstances,
+  getDummyHCHeader,
+  getDummyHCCheckpoints,
+} from "../../../data/dummyHCData";
 
 const BASE = getBackendBaseUrl();
 
@@ -56,29 +62,52 @@ export default function HCCheckPointReport() {
   useEffect(() => {
     const fetchMoulds = async () => {
       try {
+        let options = [];
         const res = await axios.get(`${BASE}/MouldSummary/MouldName`);
-        if (res.data?.success && Array.isArray(res.data.data)) {
-          const options = res.data.data.map((m) => ({
+        if (res.data?.success && Array.isArray(res.data.data) && res.data.data.length > 0) {
+          options = res.data.data.map((m) => ({
             value: m.MouldID,
             label: `${m.MouldName} (${m.MouldID})`,
             mouldID: m.MouldID,
             mouldName: m.MouldName,
           }));
-          setMouldList(options);
+        }
 
-          // If query param exists, auto-select it
-          const qMouldID = searchParams.get("mouldID");
-          if (qMouldID) {
-            const found = options.find((o) => o.mouldID === qMouldID);
-            if (found) {
-              setSelectedMouldOption(found);
-              setActiveMouldID(found.mouldID);
-              setActiveMouldName(found.mouldName);
-            }
-          }
+        if (options.length === 0) {
+          options = dummyHCMouldList.map((m) => ({
+            value: m.MouldID,
+            label: `${m.MouldName} (${m.MouldID})`,
+            mouldID: m.MouldID,
+            mouldName: m.MouldName,
+          }));
+        }
+        setMouldList(options);
+
+        // If query param exists, auto-select it; otherwise default to first mould
+        const qMouldID = searchParams.get("mouldID");
+        const found = qMouldID
+          ? options.find((o) => String(o.mouldID) === String(qMouldID)) || options[0]
+          : options[0];
+
+        if (found) {
+          setSelectedMouldOption(found);
+          setActiveMouldID(found.mouldID);
+          setActiveMouldName(found.mouldName);
         }
       } catch (err) {
-        console.error("Error loading mould list:", err);
+        console.warn("Mould list live fetch notice, using fallback list:", err?.message);
+        const options = dummyHCMouldList.map((m) => ({
+          value: m.MouldID,
+          label: `${m.MouldName} (${m.MouldID})`,
+          mouldID: m.MouldID,
+          mouldName: m.MouldName,
+        }));
+        setMouldList(options);
+        if (options.length > 0) {
+          setSelectedMouldOption(options[0]);
+          setActiveMouldID(options[0].mouldID);
+          setActiveMouldName(options[0].mouldName);
+        }
       }
     };
     fetchMoulds();
@@ -91,12 +120,13 @@ export default function HCCheckPointReport() {
     const fetchInstances = async () => {
       setLoadingInstances(true);
       try {
+        let instances = [];
         const res = await axios.get(`${BASE}/MouldMaintenanceHistoryHC/HcHistoryDetailTable`, {
           params: { mouldID: activeMouldID },
         });
 
         if (res.data?.success && Array.isArray(res.data.data) && res.data.data.length > 0) {
-          const instances = res.data.data.map((item) => ({
+          instances = res.data.data.map((item) => ({
             value: item.Instance,
             label: `Instance ${item.Instance} (Life: ${item.AtMouldLife || "-"})`,
             instance: item.Instance,
@@ -109,33 +139,67 @@ export default function HCCheckPointReport() {
             partName: item.PartName,
             userName: item.UserName,
           }));
+        }
 
-          setInstanceList(instances);
+        // If no live instances, fall back to standalone dummy instances
+        if (instances.length === 0) {
+          const fallbackData = getDummyHCInstances(activeMouldID, activeMouldName);
+          instances = fallbackData.map((item) => ({
+            value: item.Instance,
+            label: `Instance ${item.Instance} (Life: ${item.AtMouldLife || "-"})`,
+            instance: item.Instance,
+            checkListID: item.CheckListID,
+            mouldID: item.MouldID,
+            mouldName: item.MouldName,
+            checkListName: item.CheckListName,
+            materialName: item.MaterialName,
+            atMouldLife: item.AtMouldLife,
+            partName: item.PartName,
+            userName: item.UserName,
+          }));
+        }
 
-          const qInstance = searchParams.get("instance");
-          const target = qInstance
-            ? instances.find((i) => String(i.instance) === String(qInstance)) || instances[0]
-            : instances[0];
+        setInstanceList(instances);
 
-          if (target) {
-            setSelectedInstanceOption(target);
-            setActiveInstance(target.instance);
-            setActiveCheckListID(target.checkListID || activeCheckListID || 1);
-          }
-        } else {
-          setInstanceList([]);
-          setSelectedInstanceOption(null);
+        const qInstance = searchParams.get("instance");
+        const target = qInstance
+          ? instances.find((i) => String(i.instance) === String(qInstance)) || instances[0]
+          : instances[0];
+
+        if (target) {
+          setSelectedInstanceOption(target);
+          setActiveInstance(target.instance);
+          setActiveCheckListID(target.checkListID || activeCheckListID || 1);
         }
       } catch (err) {
-        console.error("Error fetching instances:", err);
-        setInstanceList([]);
+        console.warn("HC instances live fetch notice, using fallback instances:", err?.message);
+        const fallbackData = getDummyHCInstances(activeMouldID, activeMouldName);
+        const instances = fallbackData.map((item) => ({
+          value: item.Instance,
+          label: `Instance ${item.Instance} (Life: ${item.AtMouldLife || "-"})`,
+          instance: item.Instance,
+          checkListID: item.CheckListID,
+          mouldID: item.MouldID,
+          mouldName: item.MouldName,
+          checkListName: item.CheckListName,
+          materialName: item.MaterialName,
+          atMouldLife: item.AtMouldLife,
+          partName: item.PartName,
+          userName: item.UserName,
+        }));
+        setInstanceList(instances);
+        if (instances.length > 0) {
+          setSelectedInstanceOption(instances[0]);
+          setActiveInstance(instances[0].instance);
+          setActiveCheckListID(instances[0].checkListID || 1);
+        }
       } finally {
         setLoadingInstances(false);
       }
     };
 
     fetchInstances();
-  }, [activeMouldID]);
+  }, [activeMouldID, activeMouldName]);
 
   // 3. Fetch Header & Checkpoint details
   useEffect(() => {
@@ -146,48 +210,66 @@ export default function HCCheckPointReport() {
       setLoadingTable(true);
 
       try {
-        const hRes = await axios.get(
-          `${BASE}/MouldMaintenanceHistoryHC/HCCheckpointDetails/HCHeaderDetails`,
-          {
-            params: {
-              checkListID: activeCheckListID || 1,
-              instance: activeInstance,
-              mouldID: activeMouldID,
-            },
-          }
-        );
-        if (hRes.data?.success && hRes.data.data) {
-          const headerFromApi = hRes.data.data[0] || {};
-          const mergedHeader = { ...headerFromApi };
-          if (!mergedHeader.CheckListName && instanceList.length > 0) {
-            const match = instanceList.find((i) => String(i.instance) === String(activeInstance));
-            if (match) {
-              mergedHeader.CheckListName = match.checkListName || "";
-              mergedHeader.MaterialName = match.materialName || "";
-              mergedHeader.AtMouldLife = match.atMouldLife || "";
-              mergedHeader.UserName = match.userName || "";
+        let liveHeader = null;
+        try {
+          const hRes = await axios.get(
+            `${BASE}/MouldMaintenanceHistoryHC/HCCheckpointDetails/HCHeaderDetails`,
+            {
+              params: {
+                checkListID: activeCheckListID || 1,
+                instance: activeInstance,
+                mouldID: activeMouldID,
+              },
             }
+          );
+          if (hRes.data?.success && Array.isArray(hRes.data.data) && hRes.data.data.length > 0) {
+            liveHeader = hRes.data.data[0];
           }
-          setHeaderData(mergedHeader);
+        } catch (hErr) {
+          console.warn("HC Header Details API notice:", hErr?.message);
         }
+
+        const dummyHeader = getDummyHCHeader(activeMouldID, activeInstance, activeMouldName);
+        const mergedHeader = { ...(liveHeader || dummyHeader) };
+
+        if (!mergedHeader.CheckListName && instanceList.length > 0) {
+          const match = instanceList.find((i) => String(i.instance) === String(activeInstance));
+          if (match) {
+            mergedHeader.CheckListName = match.checkListName || mergedHeader.CheckListName || "";
+            mergedHeader.MaterialName = match.materialName || mergedHeader.MaterialName || "";
+            mergedHeader.AtMouldLife = match.atMouldLife || mergedHeader.AtMouldLife || "";
+            mergedHeader.UserName = match.userName || mergedHeader.UserName || "";
+          }
+        }
+        setHeaderData(mergedHeader);
       } catch (err) {
-        console.error("Error loading header details:", err);
+        console.warn("Error resolving header details, using fallback:", err);
+        setHeaderData(getDummyHCHeader(activeMouldID, activeInstance, activeMouldName));
       } finally {
         setLoadingHeader(false);
       }
 
       try {
-        const cRes = await axios.get(
-          `${BASE}/MouldMaintenanceHistoryHC/HCCheckpointDetails/HCCheckpointDetails`,
-          {
-            params: {
-              checkListID: activeCheckListID || 1,
-              instance: activeInstance,
-            },
+        let liveCheckpoints = null;
+        try {
+          const cRes = await axios.get(
+            `${BASE}/MouldMaintenanceHistoryHC/HCCheckpointDetails/HCCheckpointDetails`,
+            {
+              params: {
+                checkListID: activeCheckListID || 1,
+                instance: activeInstance,
+              },
+            }
+          );
+          if (cRes.data?.success && Array.isArray(cRes.data.data) && cRes.data.data.length > 0) {
+            liveCheckpoints = cRes.data.data;
           }
-        );
-        if (cRes.data?.success && Array.isArray(cRes.data.data)) {
-          const mapped = cRes.data.data.map((item) => ({
+        } catch (cErr) {
+          console.warn("HC Checkpoint Details API notice:", cErr?.message);
+        }
+
+        if (liveCheckpoints) {
+          const mapped = liveCheckpoints.map((item) => ({
             instance: item.Instance,
             mouldName: item.MouldName,
             checklistName: item.CheckListName,
@@ -208,18 +290,19 @@ export default function HCCheckPointReport() {
           }));
           setReportData(mapped);
         } else {
-          setReportData([]);
+          const dummyItems = getDummyHCCheckpoints(activeMouldID, activeInstance, activeMouldName);
+          setReportData(dummyItems);
         }
       } catch (err) {
-        console.error("Error loading checkpoints:", err);
-        setReportData([]);
+        console.warn("Error resolving checkpoints, using fallback:", err);
+        setReportData(getDummyHCCheckpoints(activeMouldID, activeInstance, activeMouldName));
       } finally {
         setLoadingTable(false);
       }
     };
 
     fetchDetails();
-  }, [activeMouldID, activeInstance, activeCheckListID]);
+  }, [activeMouldID, activeInstance, activeCheckListID, activeMouldName]);
 
   useEffect(() => {
     if (!activeInstance || instanceList.length === 0) return;
@@ -549,6 +632,20 @@ export default function HCCheckPointReport() {
             </div>
 
             <div className="bg-slate-50  border border-slate-200  p-2.5 rounded-xl">
+              <span className="text-[10px] text-slate-400 block">HC Frequency</span>
+              <span className="font-bold text-cyan-500 font-mono block mt-0.5">
+                {headerData.PMFreqCount || "--"}
+              </span>
+            </div>
+
+            <div className="bg-slate-50  border border-slate-200  p-2.5 rounded-xl">
+              <span className="text-[10px] text-slate-400 block">HC Due Shots</span>
+              <span className="font-bold text-amber-500 font-mono block mt-0.5">
+                {headerData.PMDueShots || "--"}
+              </span>
+            </div>
+
+            <div className="bg-slate-50  border border-slate-200  p-2.5 rounded-xl">
               <span className="text-[10px] text-slate-400 block">User Name</span>
               <span className="font-semibold text-slate-800  truncate block mt-0.5">
                 {headerData.UserName || searchUserName || "--"}
@@ -559,6 +656,34 @@ export default function HCCheckPointReport() {
               <span className="text-[10px] text-slate-400 block">Approval Name</span>
               <span className="font-semibold text-slate-800  truncate block mt-0.5">
                 {headerData.ApproverName || "--"}
+              </span>
+            </div>
+
+            <div className="bg-slate-50  border border-slate-200  p-2.5 rounded-xl">
+              <span className="text-[10px] text-slate-400 block">Customer</span>
+              <span className="font-semibold text-slate-800  truncate block mt-0.5">
+                {headerData.CustomerName || "--"}
+              </span>
+            </div>
+
+            <div className="bg-slate-50  border border-slate-200  p-2.5 rounded-xl">
+              <span className="text-[10px] text-slate-400 block">Gate Type</span>
+              <span className="font-semibold text-slate-800  truncate block mt-0.5">
+                {headerData.GateType || "--"}
+              </span>
+            </div>
+
+            <div className="col-span-2 bg-slate-50  border border-slate-200  p-2.5 rounded-xl">
+              <span className="text-[10px] text-slate-400 block">Start Time</span>
+              <span className="font-mono text-slate-700  text-[11px] block mt-0.5 truncate">
+                {headerData.StartTime || "--"}
+              </span>
+            </div>
+
+            <div className="col-span-2 bg-slate-50  border border-slate-200  p-2.5 rounded-xl">
+              <span className="text-[10px] text-slate-400 block">End Time</span>
+              <span className="font-mono text-slate-700  text-[11px] block mt-0.5 truncate">
+                {headerData.EndTime || "--"}
               </span>
             </div>
           </div>

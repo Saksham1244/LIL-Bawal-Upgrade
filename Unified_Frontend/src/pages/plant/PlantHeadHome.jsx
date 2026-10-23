@@ -269,7 +269,14 @@ export default function PlantHeadHome() {
   };
 
   const renderRunningMouldBadge = (mouldName, status) => {
-    if (!mouldName || mouldName === "-" || mouldName.toLowerCase() === "null") {
+    const raw = (mouldName || "").trim();
+    if (
+      !raw ||
+      raw === "-" ||
+      raw.toLowerCase() === "null" ||
+      raw.toLowerCase() === "mould not loaded" ||
+      raw.toLowerCase() === "no mould loaded"
+    ) {
       return <span className="text-gray-400 font-sans">-</span>;
     }
 
@@ -279,10 +286,10 @@ export default function PlantHeadHome() {
       return (
         <span
           className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium border shadow-2xs bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/25 max-w-full"
-          title={`${mouldName} (Overdue)`}
+          title={`${raw} (Overdue)`}
         >
           <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0"></span>
-          <span className="truncate">{mouldName}</span>
+          <span className="truncate">{raw}</span>
         </span>
       );
     }
@@ -291,22 +298,22 @@ export default function PlantHeadHome() {
       return (
         <span
           className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium border shadow-2xs bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/25 max-w-full"
-          title={`${mouldName} (Due Soon)`}
+          title={`${raw} (Due Soon)`}
         >
           <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"></span>
-          <span className="truncate">{mouldName}</span>
+          <span className="truncate">{raw}</span>
         </span>
       );
     }
 
-    // Default: DONE (green pill with green dot, mould name inside, no 'DONE' text written)
+    // Default: DONE (green pill with green dot, mould name inside)
     return (
       <span
         className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium border shadow-2xs bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/25 max-w-full"
-        title={`${mouldName} (Maintained / OK)`}
+        title={`${raw} (Maintained / OK)`}
       >
         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
-        <span className="truncate">{mouldName}</span>
+        <span className="truncate">{raw}</span>
       </span>
     );
   };
@@ -459,9 +466,9 @@ export default function PlantHeadHome() {
                   <th rowSpan="2" className="py-3 px-2 border-r border-gray-200 dark:border-[#242832] whitespace-nowrap w-[80px]">Machine Status</th>
                   <th rowSpan="2" className="py-3 px-2 border-r border-gray-200 dark:border-[#242832] w-[80px]">Running Mould</th>
                   <th rowSpan="2" className="py-3 px-2 text-center border-r border-gray-200 dark:border-[#242832] w-[50px]">OEE</th>
-                  <th rowSpan="2" className="py-3 px-2 text-center border-r border-gray-200 dark:border-[#242832] w-[55px]">Availability</th>
-                  <th rowSpan="2" className="py-3 px-2 text-center border-r border-gray-200 dark:border-[#242832] w-[55px]">Performance</th>
-                  <th rowSpan="2" className="py-3 px-2 text-center border-r border-gray-200 dark:border-[#242832] w-[50px]">Quality</th>
+<th rowSpan="2" className="py-3 px-2 text-center border-r border-gray-200 dark:border-[#242832] w-[55px]" title="Availability">Avail.</th>
+                   <th rowSpan="2" className="py-3 px-2 text-center border-r border-gray-200 dark:border-[#242832] w-[55px]" title="Performance">Perf.</th>
+                   <th rowSpan="2" className="py-3 px-2 text-center border-r border-gray-200 dark:border-[#242832] w-[50px]" title="Quality">Qual.</th>
                   <th colSpan="3" className="py-2 px-2 text-center border-b border-r border-gray-200 dark:border-[#242832] bg-emerald-500/10 text-emerald-500 w-[130px]">
                     Production Output
                   </th>
@@ -499,23 +506,27 @@ export default function PlantHeadHome() {
                       : (Number(m.Actual) > 0 || oee > 0 ? "RUNNING" : (Number(m.TotalDT) > 60 ? "DOWN" : "IDLE"));
 
                   // Mould Maintenance Status: OVERDUE > DUE > DONE
-                  const mouldRaw = (m.RunningMould || "").trim();
-                  const hasMould = mouldRaw && mouldRaw !== "-" && mouldRaw.toLowerCase() !== "null";
+                  const mouldRaw = (m.RunningMould || m.MouldName || "").trim();
+                  const hasMould =
+                    mouldRaw &&
+                    mouldRaw !== "-" &&
+                    mouldRaw.toLowerCase() !== "null" &&
+                    mouldRaw.toLowerCase() !== "mould not loaded" &&
+                    mouldRaw.toLowerCase() !== "no mould loaded";
                   let mouldStatus = m.MouldStatus || null;
                   if (hasMould && !mouldStatus) {
                     const norm = (s) => {
                       if (!s) return null;
                       const str = String(s).toUpperCase().trim();
                       if (str.includes("OVERDUE") || str === "3") return "OVERDUE";
-                      if (str.includes("DUE") || str === "2") return "DUE";
+                      if (str.includes("DUE") || str === "2" || str === "8") return "DUE";
                       if (str.includes("DONE") || str.includes("NORMAL") || str.includes("COMPLETE") || str === "1" || str === "7") return "DONE";
                       return null;
                     };
                     const p = norm(m.PMStatus);
-                    const h = norm(m.HCStatus);
-                    if (p === "OVERDUE" || h === "OVERDUE") mouldStatus = "OVERDUE";
-                    else if (p === "DUE" || h === "DUE") mouldStatus = "DUE";
-                    else if (p === "DONE" || h === "DONE") mouldStatus = "DONE";
+                    if (p === "OVERDUE") mouldStatus = "OVERDUE";
+                    else if (p === "DUE") mouldStatus = "DUE";
+                    else if (p === "DONE") mouldStatus = "DONE";
                     else mouldStatus = "DONE";
                   }
 

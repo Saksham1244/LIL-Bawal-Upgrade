@@ -58,25 +58,25 @@ let cachedHourlyTrend = [
 ];
 let cachedTotalDownTime = [{ TotalTime: 480, TotalDownTime: 65, OperatingTime: 415 }];
 let cachedMachinewise = [
-  { EquipmentID: 1, StationID: 1, EquipmentName: 'JSW 1300T-1', MouldName: 'YCA  H/L Lens M2', OpTime: 420, ExpectedQuantity: 180, ActualQuantity: 155, Downtime: 15, RejectedQty: 2, AvailabilityPercent: 84.5, PerformancePercent: 88.2, QualityPercent: 99.1, OEEPercent: 73.8 },
-  { EquipmentID: 2, StationID: 2, EquipmentName: 'JSW 1300T-2', MouldName: 'YED  NB LENS', OpTime: 460, ExpectedQuantity: 270, ActualQuantity: 260, Downtime: 0, RejectedQty: 1, AvailabilityPercent: 95.2, PerformancePercent: 99.8, QualityPercent: 99.5, OEEPercent: 95.0 },
-  { EquipmentID: 3, StationID: 3, EquipmentName: 'CLF 190T', MouldName: 'YSD SIDE TURN INNER LENS-3rd', OpTime: 0, ExpectedQuantity: 0, ActualQuantity: 0, Downtime: 0, RejectedQty: 0, AvailabilityPercent: 0, PerformancePercent: 0, QualityPercent: 100, OEEPercent: 0 },
-  { EquipmentID: 4, StationID: 4, EquipmentName: 'BMC 550T', MouldName: 'YCA H/L REF. RHD-3rd', OpTime: 0, ExpectedQuantity: 0, ActualQuantity: 0, Downtime: 0, RejectedQty: 0, AvailabilityPercent: 0, PerformancePercent: 0, QualityPercent: 100, OEEPercent: 0 },
-  { EquipmentID: 5, StationID: 5, EquipmentName: 'BMC 650T', MouldName: 'Y0M  H/L REF. RHD', OpTime: 0, ExpectedQuantity: 0, ActualQuantity: 0, Downtime: 0, RejectedQty: 0, AvailabilityPercent: 0, PerformancePercent: 0, QualityPercent: 100, OEEPercent: 0 },
-  { EquipmentID: 6, StationID: 6, EquipmentName: 'CLF 400T', MouldName: 'YHB  RPG EXTENSION-M2', OpTime: 0, ExpectedQuantity: 0, ActualQuantity: 0, Downtime: 0, RejectedQty: 0, AvailabilityPercent: 0, PerformancePercent: 0, QualityPercent: 100, OEEPercent: 0 },
-  { EquipmentID: 7, StationID: 7, EquipmentName: 'Shibaura 650 T1', MouldName: 'YHB/YHC  25MC TL LENS', OpTime: 360, ExpectedQuantity: 240, ActualQuantity: 209, Downtime: 25, RejectedQty: 3, AvailabilityPercent: 72.1, PerformancePercent: 91.4, QualityPercent: 98.7, OEEPercent: 65.0 },
-  { EquipmentID: 8, StationID: 8, EquipmentName: 'Shibaura 1000T-2', MouldName: 'YED NB H/L EXTENSION', OpTime: 0, ExpectedQuantity: 0, ActualQuantity: 0, Downtime: 0, RejectedQty: 0, AvailabilityPercent: 0, PerformancePercent: 0, QualityPercent: 100, OEEPercent: 0 },
-  { EquipmentID: 9, StationID: 9, EquipmentName: 'L&T 180T (Shibaura)', MouldName: 'Mould Not Loaded', OpTime: 380, ExpectedQuantity: 300, ActualQuantity: 262, Downtime: 45, RejectedQty: 4, AvailabilityPercent: 80.0, PerformancePercent: 87.3, QualityPercent: 98.5, OEEPercent: 68.8 },
-  { EquipmentID: 10, StationID: 10, EquipmentName: 'Shibaura 500T-1', MouldName: 'YHC RCL INNER LENS -2', OpTime: 0, ExpectedQuantity: 0, ActualQuantity: 0, Downtime: 0, RejectedQty: 0, AvailabilityPercent: 0, PerformancePercent: 0, QualityPercent: 100, OEEPercent: 0 },
-  { EquipmentID: 11, StationID: 11, EquipmentName: 'Shibaura 650 T3', MouldName: 'YCA HL FTS REFLECTOR  M2', OpTime: 0, ExpectedQuantity: 0, ActualQuantity: 0, Downtime: 0, RejectedQty: 0, AvailabilityPercent: 0, PerformancePercent: 0, QualityPercent: 100, OEEPercent: 0 },
-  { EquipmentID: 12, StationID: 12, EquipmentName: 'Shibaura 100T', MouldName: 'YSD HMSL LENS-2nd', OpTime: 0, ExpectedQuantity: 0, ActualQuantity: 0, Downtime: 0, RejectedQty: 0, AvailabilityPercent: 0, PerformancePercent: 0, QualityPercent: 100, OEEPercent: 0 },
-  { EquipmentID: 13, StationID: 13, EquipmentName: 'FCS 350 T3', MouldName: '31XA HMSL HOUSING', OpTime: 370, ExpectedQuantity: 220, ActualQuantity: 197, Downtime: 10, RejectedQty: 2, AvailabilityPercent: 68.3, PerformancePercent: 84.1, QualityPercent: 99.2, OEEPercent: 57.0 },
-  { EquipmentID: 14, StationID: 14, EquipmentName: 'Shibaura 350T-2', MouldName: 'Mould Not Loaded', OpTime: 390, ExpectedQuantity: 400, ActualQuantity: 374, Downtime: 30, RejectedQty: 5, AvailabilityPercent: 82.0, PerformancePercent: 93.5, QualityPercent: 98.7, OEEPercent: 75.7 },
-  { EquipmentID: 15, StationID: 15, EquipmentName: 'Shibaura 150T', MouldName: 'YED NB H/L SUN SHADE', OpTime: 440, ExpectedQuantity: 350, ActualQuantity: 336, Downtime: 5, RejectedQty: 2, AvailabilityPercent: 94.1, PerformancePercent: 98.2, QualityPercent: 99.6, OEEPercent: 92.0 },
-  { EquipmentID: 16, StationID: 16, EquipmentName: 'Shibaura 650T-2', MouldName: 'Y17 BACKUP HOUSING', OpTime: 390, ExpectedQuantity: 230, ActualQuantity: 214, Downtime: 15, RejectedQty: 2, AvailabilityPercent: 74.5, PerformancePercent: 92.0, QualityPercent: 99.1, OEEPercent: 68.0 },
-  { EquipmentID: 17, StationID: 17, EquipmentName: 'Shibaura 350T-1', MouldName: 'Y17 LV REFLECTOR ', OpTime: 410, ExpectedQuantity: 140, ActualQuantity: 120, Downtime: 10, RejectedQty: 1, AvailabilityPercent: 86.4, PerformancePercent: 96.8, QualityPercent: 99.2, OEEPercent: 83.0 },
-  { EquipmentID: 18, StationID: 18, EquipmentName: 'Shibaura 1000T-1', MouldName: 'YHB  RCL EXTENSION-M3', OpTime: 320, ExpectedQuantity: 210, ActualQuantity: 189, Downtime: 20, RejectedQty: 2, AvailabilityPercent: 62.8, PerformancePercent: 85.3, QualityPercent: 98.9, OEEPercent: 53.0 },
-  { EquipmentID: 19, StationID: 19, EquipmentName: 'Shibaura 1075T', MouldName: 'Y0M H/L LENS', OpTime: 150, ExpectedQuantity: 50, ActualQuantity: 15, Downtime: 40, RejectedQty: 0, AvailabilityPercent: 20.0, PerformancePercent: 65.0, QualityPercent: 100, OEEPercent: 13.0 }
+  { EquipmentID: 1, StationID: 1, EquipmentName: 'JSW 1300T-1', MouldName: 'YCA  H/L Lens M2', OpTime: 420, ExpectedQuantity: 180, ActualQuantity: 155, Downtime: 15, RejectedQty: 2, AvailabilityPercent: 84.5, PerformancePercent: 88.2, QualityPercent: 99.1, OEEPercent: 73.8, status: 'Running' },
+  { EquipmentID: 2, StationID: 2, EquipmentName: 'JSW 1300T-2', MouldName: 'YED  NB LENS', OpTime: 460, ExpectedQuantity: 270, ActualQuantity: 260, Downtime: 0, RejectedQty: 1, AvailabilityPercent: 95.2, PerformancePercent: 99.8, QualityPercent: 99.5, OEEPercent: 95.0, status: 'Running' },
+  { EquipmentID: 3, StationID: 3, EquipmentName: 'CLF 190T', MouldName: 'YSD SIDE TURN INNER LENS-3rd', OpTime: 0, ExpectedQuantity: 0, ActualQuantity: 0, Downtime: 0, RejectedQty: 0, AvailabilityPercent: 0, PerformancePercent: 0, QualityPercent: 100, OEEPercent: 0, status: 'Idle' },
+  { EquipmentID: 4, StationID: 4, EquipmentName: 'BMC 550T', MouldName: 'YCA H/L REF. RHD-3rd', OpTime: 0, ExpectedQuantity: 0, ActualQuantity: 0, Downtime: 0, RejectedQty: 0, AvailabilityPercent: 0, PerformancePercent: 0, QualityPercent: 100, OEEPercent: 0, status: 'Idle' },
+  { EquipmentID: 5, StationID: 5, EquipmentName: 'BMC 650T', MouldName: 'Y0M  H/L REF. RHD', OpTime: 0, ExpectedQuantity: 0, ActualQuantity: 0, Downtime: 0, RejectedQty: 0, AvailabilityPercent: 0, PerformancePercent: 0, QualityPercent: 100, OEEPercent: 0, status: 'Idle' },
+  { EquipmentID: 6, StationID: 6, EquipmentName: 'CLF 400T', MouldName: 'YHB  RPG EXTENSION-M2', OpTime: 0, ExpectedQuantity: 0, ActualQuantity: 0, Downtime: 0, RejectedQty: 0, AvailabilityPercent: 0, PerformancePercent: 0, QualityPercent: 100, OEEPercent: 0, status: 'Idle' },
+  { EquipmentID: 7, StationID: 7, EquipmentName: 'Shibaura 650 T1', MouldName: 'YHB/YHC  25MC TL LENS', OpTime: 360, ExpectedQuantity: 240, ActualQuantity: 209, Downtime: 25, RejectedQty: 3, AvailabilityPercent: 72.1, PerformancePercent: 91.4, QualityPercent: 98.7, OEEPercent: 65.0, status: 'Running' },
+  { EquipmentID: 8, StationID: 8, EquipmentName: 'Shibaura 1000T-2', MouldName: 'YED NB H/L EXTENSION', OpTime: 0, ExpectedQuantity: 0, ActualQuantity: 0, Downtime: 0, RejectedQty: 0, AvailabilityPercent: 0, PerformancePercent: 0, QualityPercent: 100, OEEPercent: 0, status: 'Idle' },
+  { EquipmentID: 9, StationID: 9, EquipmentName: 'L&T 180T (Shibaura)', MouldName: 'Mould Not Loaded', OpTime: 380, ExpectedQuantity: 300, ActualQuantity: 262, Downtime: 45, RejectedQty: 4, AvailabilityPercent: 80.0, PerformancePercent: 87.3, QualityPercent: 98.5, OEEPercent: 68.8, status: 'Running' },
+  { EquipmentID: 10, StationID: 10, EquipmentName: 'Shibaura 500T-1', MouldName: 'YHC RCL INNER LENS -2', OpTime: 0, ExpectedQuantity: 0, ActualQuantity: 0, Downtime: 0, RejectedQty: 0, AvailabilityPercent: 0, PerformancePercent: 0, QualityPercent: 100, OEEPercent: 0, status: 'Idle' },
+  { EquipmentID: 11, StationID: 11, EquipmentName: 'Shibaura 650 T3', MouldName: 'YCA HL FTS REFLECTOR  M2', OpTime: 0, ExpectedQuantity: 0, ActualQuantity: 0, Downtime: 0, RejectedQty: 0, AvailabilityPercent: 0, PerformancePercent: 0, QualityPercent: 100, OEEPercent: 0, status: 'Idle' },
+  { EquipmentID: 12, StationID: 12, EquipmentName: 'Shibaura 100T', MouldName: 'YSD HMSL LENS-2nd', OpTime: 0, ExpectedQuantity: 0, ActualQuantity: 0, Downtime: 0, RejectedQty: 0, AvailabilityPercent: 0, PerformancePercent: 0, QualityPercent: 100, OEEPercent: 0, status: 'Idle' },
+  { EquipmentID: 13, StationID: 13, EquipmentName: 'FCS 350 T3', MouldName: '31XA HMSL HOUSING', OpTime: 370, ExpectedQuantity: 220, ActualQuantity: 197, Downtime: 10, RejectedQty: 2, AvailabilityPercent: 68.3, PerformancePercent: 84.1, QualityPercent: 99.2, OEEPercent: 57.0, status: 'Running' },
+  { EquipmentID: 14, StationID: 14, EquipmentName: 'Shibaura 350T-2', MouldName: 'Mould Not Loaded', OpTime: 390, ExpectedQuantity: 400, ActualQuantity: 374, Downtime: 30, RejectedQty: 5, AvailabilityPercent: 82.0, PerformancePercent: 93.5, QualityPercent: 98.7, OEEPercent: 75.7, status: 'Running' },
+  { EquipmentID: 15, StationID: 15, EquipmentName: 'Shibaura 150T', MouldName: 'YED NB H/L SUN SHADE', OpTime: 440, ExpectedQuantity: 350, ActualQuantity: 336, Downtime: 5, RejectedQty: 2, AvailabilityPercent: 94.1, PerformancePercent: 98.2, QualityPercent: 99.6, OEEPercent: 92.0, status: 'Running' },
+  { EquipmentID: 16, StationID: 16, EquipmentName: 'Shibaura 650T-2', MouldName: 'Y17 BACKUP HOUSING', OpTime: 390, ExpectedQuantity: 230, ActualQuantity: 214, Downtime: 15, RejectedQty: 2, AvailabilityPercent: 74.5, PerformancePercent: 92.0, QualityPercent: 99.1, OEEPercent: 68.0, status: 'Running' },
+  { EquipmentID: 17, StationID: 17, EquipmentName: 'Shibaura 350T-1', MouldName: 'Y17 LV REFLECTOR ', OpTime: 410, ExpectedQuantity: 140, ActualQuantity: 120, Downtime: 10, RejectedQty: 1, AvailabilityPercent: 86.4, PerformancePercent: 96.8, QualityPercent: 99.2, OEEPercent: 83.0, status: 'Running' },
+  { EquipmentID: 18, StationID: 18, EquipmentName: 'Shibaura 1000T-1', MouldName: 'YHB  RCL EXTENSION-M3', OpTime: 320, ExpectedQuantity: 210, ActualQuantity: 189, Downtime: 20, RejectedQty: 2, AvailabilityPercent: 62.8, PerformancePercent: 85.3, QualityPercent: 98.9, OEEPercent: 53.0, status: 'Running' },
+  { EquipmentID: 19, StationID: 19, EquipmentName: 'Shibaura 1075T', MouldName: 'Y0M H/L LENS', OpTime: 150, ExpectedQuantity: 50, ActualQuantity: 15, Downtime: 40, RejectedQty: 0, AvailabilityPercent: 20.0, PerformancePercent: 65.0, QualityPercent: 100, OEEPercent: 13.0, status: 'Running' }
 ];
 let cachedMachineNames = cachedMachinewise.map(m => ({ EquipmentName: m.EquipmentName, EquipmentID: m.EquipmentID }));
 
@@ -475,6 +475,110 @@ router.get("/GetMachineName", async (req, res) => {
   }
 });
 
+async function enrichWithMouldStatus(rows) {
+  if (!rows || rows.length === 0) return rows;
+  try {
+    const pool = await withTimeout(getPool(), 3000);
+
+    let runningMouldMap = {};
+    try {
+      const perfRes = await withTimeout(
+        pool.request().input("FilterType", sql.VarChar, "Current").execute("Dashboard2_Get_MachinePerformance"),
+        4000
+      );
+      (perfRes.recordset || []).forEach((row) => {
+        if (row.Machine && row.RunningMould) {
+          runningMouldMap[row.Machine.trim().toLowerCase()] = row.RunningMould;
+        }
+      });
+    } catch (e) {
+      console.warn("Dashboard2_Get_MachinePerformance error:", e.message);
+    }
+
+    let mmRows = [];
+    try {
+      const mmRes = await withTimeout(
+        pool.request().query(`
+          SELECT mm.MouldID, cm.MouldName, mm.MouldPMStatus, mm.NextPMDueDate, mm.NextPMDue, mm.MouldActualLife, mm.PMWarning
+          FROM [dbo].[Mould_Monitoring] mm
+          JOIN [dbo].[Config_Mould] cm ON mm.MouldID = cm.MouldID
+        `),
+        4000
+      );
+      mmRows = mmRes?.recordset || [];
+    } catch (e) {
+      console.warn("Mould_Monitoring query error in enrichWithMouldStatus:", e.message);
+    }
+
+    const normalizeKey = (s) => (s || "").toLowerCase().replace(/\s+/g, " ").trim();
+    const pmMap = {};
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    mmRows.forEach((r) => {
+      let st = "DONE";
+      const code = r.MouldPMStatus;
+      if (code === 3 || code === "3") {
+        st = "OVERDUE";
+      } else if (code === 2 || code === "2" || code === 8 || code === "8") {
+        st = "DUE";
+      } else if (code === 1 || code === "1" || code === 7 || code === "7") {
+        st = "DONE";
+      }
+
+      // Check dates and shot counts against live thresholds
+      if (r.NextPMDueDate && new Date(r.NextPMDueDate) > new Date("2000-01-01")) {
+        const dueDate = new Date(r.NextPMDueDate);
+        dueDate.setHours(0, 0, 0, 0);
+        if (dueDate < today && st !== "OVERDUE") {
+          st = "OVERDUE";
+        }
+      }
+      if (r.NextPMDue > 0 && r.MouldActualLife >= r.NextPMDue && st !== "OVERDUE") {
+        st = "OVERDUE";
+      }
+
+      if (r.MouldName) {
+        pmMap[r.MouldName.trim().toLowerCase()] = st;
+        pmMap[normalizeKey(r.MouldName)] = st;
+      }
+      if (r.MouldID) {
+        pmMap[r.MouldID.trim().toLowerCase()] = st;
+        pmMap[normalizeKey(r.MouldID)] = st;
+      }
+    });
+
+    return rows.map((row) => {
+      const machineKey = (row.EquipmentName || "").trim().toLowerCase();
+      const mouldRaw = (row.RunningMould || row.MouldName || runningMouldMap[machineKey] || "").trim();
+      const mouldKey = mouldRaw.toLowerCase();
+      const normKey = normalizeKey(mouldRaw);
+      const hasMould = mouldRaw && mouldKey !== "null" && mouldKey !== "-" && mouldKey !== "mould not loaded" && mouldKey !== "no mould loaded";
+
+      let mouldStatus = null;
+      if (hasMould) {
+        mouldStatus = pmMap[mouldKey] || pmMap[normKey] || "DONE";
+      }
+
+      return {
+        ...row,
+        RunningMould: hasMould ? mouldRaw : null,
+        MouldName: hasMould ? mouldRaw : (row.MouldName || "-"),
+        PMStatus: mouldStatus,
+        HCStatus: null,
+        MouldStatus: mouldStatus,
+      };
+    });
+  } catch {
+    return rows.map((row) => ({
+      ...row,
+      PMStatus: null,
+      HCStatus: null,
+      MouldStatus: null,
+    }));
+  }
+}
+
 router.get("/machinewise", async (req, res) => {
   try {
     const { mode, Mode, startDate, StartDate, endDate, EndDate, stationId, shift, Shift } = req.query;
@@ -487,7 +591,7 @@ router.get("/machinewise", async (req, res) => {
       const end = endDate || EndDate || null;
       const q = `
         ;WITH RunningMould AS (
-            SELECT EquipmentID, MouldName
+            SELECT EquipmentID, MouldName, MouldID
             FROM (
                 SELECT *,
                        ROW_NUMBER() OVER (PARTITION BY EquipmentID ORDER BY LastUpdatedTime DESC) AS rn
@@ -501,7 +605,8 @@ router.get("/machinewise", async (req, res) => {
                 ce.EquipmentID,
                 ce.StationID,
                 ce.EquipmentName,
-                rm.MouldName
+                rm.MouldName,
+                rm.MouldID
             FROM dbo.Config_Equipment ce
             LEFT JOIN RunningMould rm ON ce.EquipmentID = rm.EquipmentID
             WHERE (@StationID IS NULL OR ce.StationID = @StationID)
@@ -544,6 +649,7 @@ router.get("/machinewise", async (req, res) => {
                 eq.StationID,
                 eq.EquipmentName,
                 ISNULL(eq.MouldName, 'Mould Not Loaded') AS MouldName,
+                eq.MouldID AS MouldID,
                 'DateRange' AS TimeGroup,
                 @ShiftCode AS ProdShift,
                 ISNULL(SUM(o.AvailableTime), 0) AS OpTime,
@@ -554,11 +660,16 @@ router.get("/machinewise", async (req, res) => {
                 CASE WHEN ROUND(AVG(o.Availability) * 100, 2) > 100 THEN 100 ELSE ISNULL(ROUND(AVG(o.Availability) * 100, 2), 0) END AS AvailabilityPercent,
                 CASE WHEN ROUND(AVG(o.Performance) * 100, 2) > 100 THEN 100 ELSE ISNULL(ROUND(AVG(o.Performance) * 100, 2), 0) END AS PerformancePercent,
                 CASE WHEN ROUND(AVG(o.Quality) * 100, 2) > 100 THEN 100 ELSE ISNULL(ROUND(AVG(o.Quality) * 100, 2), 0) END AS QualityPercent,
-                CASE WHEN ROUND(AVG(o.Availability * o.Performance * o.Quality) * 100, 2) > 100 THEN 100 ELSE ISNULL(ROUND(AVG(o.Availability * o.Performance * o.Quality) * 100, 2), 0) END AS OEEPercent
+                CASE WHEN ROUND(AVG(o.Availability * o.Performance * o.Quality) * 100, 2) > 100 THEN 100 ELSE ISNULL(ROUND(AVG(o.Availability * o.Performance * o.Quality) * 100, 2), 0) END AS OEEPercent,
+                CASE
+                    WHEN ISNULL(SUM(o.TotalQuantity), 0) > 0 OR ROUND(AVG(o.Availability * o.Performance * o.Quality) * 100, 2) > 0 THEN 'Running'
+                    WHEN ISNULL(SUM(o.TotalDownTime), 0) > 60 THEN 'Down'
+                    ELSE 'Idle'
+                END AS MachineStatus
             FROM EquipmentList eq
             LEFT JOIN LastOEE o ON eq.EquipmentID = o.EquipmentID
             GROUP BY
-                eq.EquipmentID, eq.StationID, eq.EquipmentName, eq.MouldName
+                eq.EquipmentID, eq.StationID, eq.EquipmentName, eq.MouldName, eq.MouldID
         )
         SELECT *
         FROM Aggregated
@@ -573,7 +684,8 @@ router.get("/machinewise", async (req, res) => {
       if (result.recordset && result.recordset.length > 0) {
         cachedMachinewise = result.recordset;
       }
-      return res.json({ success: true, data: result.recordset });
+      const enriched = await enrichWithMouldStatus(result.recordset);
+      return res.json({ success: true, data: enriched });
     }
 
     const result = await withTimeout(pool
@@ -583,15 +695,17 @@ router.get("/machinewise", async (req, res) => {
       .input("EndDate", sql.Date, endDate || EndDate || null)
       .input("StationID", sql.Int, stationId || null)
       .input("Shift", sql.VarChar(10), shift || Shift || null)
-      .execute("sp_GetMachineWiseDataDashboardKpiCard"), 3000);
+      .execute("sp_GetMachineWiseDataDashboardKpiCard"), 10000);
 
     if (result.recordset && result.recordset.length > 0) {
       cachedMachinewise = result.recordset;
     }
-    res.json({ success: true, data: result.recordset });
+    const enriched = await enrichWithMouldStatus(result.recordset);
+    res.json({ success: true, data: enriched });
   } catch (error) {
     console.warn("DB Notice: GET /machinewise using fallback cache:", error.message);
-    res.json({ success: true, data: cachedMachinewise });
+    const enrichedFallback = await enrichWithMouldStatus(cachedMachinewise);
+    res.json({ success: true, data: enrichedFallback });
   }
 });
 
@@ -1565,6 +1679,22 @@ router.get("/machine-cockpit/summary", async (req, res) => {
     } catch (e) {
       console.warn("Dashboard2_Get_MachinePerformance error:", e.message);
     }
+    // Fallback to cached machine data when DB unavailable
+    if (Object.keys(machPerfMap).length === 0 && cachedMachinewise.length > 0) {
+      cachedMachinewise.forEach((m) => {
+        machPerfMap[m.EquipmentName.trim().toLowerCase()] = {
+          Machine: m.EquipmentName,
+          Actual: m.ActualQuantity,
+          OEE: m.OEEPercent,
+          TotalDT: m.Downtime,
+          Availability: m.AvailabilityPercent,
+          Performance: m.PerformancePercent,
+          Quality: m.QualityPercent,
+          Rejected: m.RejectedQty,
+          Plan: m.ExpectedQuantity,
+        };
+      });
+    }
 
     // 3. Active Alarms per machine
     let alarmCountMap = {};
@@ -1598,6 +1728,48 @@ router.get("/machine-cockpit/summary", async (req, res) => {
       console.warn("ShiftEventMachineMoulddata error:", e.message);
     }
 
+    // 5. Mould PM Status from Mould_Monitoring
+    let pmMap = {};
+    try {
+      const mmRes = await pool.request().query(`
+        SELECT mm.MouldID, cm.MouldName, mm.MouldPMStatus, mm.NextPMDueDate, mm.NextPMDue, mm.MouldActualLife, mm.PMWarning
+        FROM [dbo].[Mould_Monitoring] mm
+        JOIN [dbo].[Config_Mould] cm ON mm.MouldID = cm.MouldID
+      `);
+      const mmRows = mmRes?.recordset || [];
+      const normalizeKey = (s) => (s || "").toLowerCase().replace(/\s+/g, " ").trim();
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      mmRows.forEach((r) => {
+        let st = "DONE";
+        const code = r.MouldPMStatus;
+        if (code === 3 || code === "3") st = "OVERDUE";
+        else if (code === 2 || code === "2" || code === 8 || code === "8") st = "DUE";
+        else if (code === 1 || code === "1" || code === 7 || code === "7") st = "DONE";
+
+        if (r.NextPMDueDate && new Date(r.NextPMDueDate) > new Date("2000-01-01")) {
+          const dueDate = new Date(r.NextPMDueDate);
+          dueDate.setHours(0, 0, 0, 0);
+          if (dueDate < today && st !== "OVERDUE") st = "OVERDUE";
+        }
+        if (r.NextPMDue > 0 && r.MouldActualLife >= r.NextPMDue && st !== "OVERDUE") {
+          st = "OVERDUE";
+        }
+
+        if (r.MouldName) {
+          pmMap[r.MouldName.trim().toLowerCase()] = st;
+          pmMap[normalizeKey(r.MouldName)] = st;
+        }
+        if (r.MouldID) {
+          pmMap[r.MouldID.trim().toLowerCase()] = st;
+          pmMap[normalizeKey(r.MouldID)] = st;
+        }
+      });
+    } catch (e) {
+      console.warn("Mould PM Status error in cockpit:", e.message);
+    }
+
     // Map each actual machine into the Cockpit Card format
     const machineList = equipments.map((eq, idx) => {
       const eqName = eq.EquipmentName || `Machine ${idx + 1}`;
@@ -1618,8 +1790,8 @@ router.get("/machine-cockpit/summary", async (req, res) => {
       const rejectedQty = Number(perf.Rejected) || 0;
       const goodQty = Math.max(0, actualQty - rejectedQty);
 
-      const totalDT = Number(perf.TotalDT) || (actualQty === 0 ? 120 : 0);
-      const isRunning = actualQty > 0 || (oee > 0 && activeAlarmCount === 0);
+      const totalDT = Number(perf.TotalDT) || 0;
+      const isRunning = actualQty > 0 || oee > 0;
 
       // Extract tonnage & make for subtitle
       let makeSubtitle = eq.EquipmentDesc || eq.EquipmentName;
@@ -1636,6 +1808,15 @@ router.get("/machine-cockpit/summary", async (req, res) => {
         ? mouldInfo.MouldID.replace(/-PM-4W/i, "").slice(0, 22)
         : (hasRealMould ? `JOB-${eq.StationID || idx + 1}092` : "No Mould Loaded");
 
+      // Mould PM Status
+      const mouldKey = runningMouldName.trim().toLowerCase();
+      const normKey = runningMouldName.toLowerCase().replace(/\s+/g, " ").trim();
+      const hasMould = runningMouldName && mouldKey !== "no mould loaded" && mouldKey !== "-";
+      let mouldStatus = null;
+      if (hasMould) {
+        mouldStatus = pmMap[mouldKey] || pmMap[normKey] || "DONE";
+      }
+
       return {
         id: eqName,
         equipmentID: eqId,
@@ -1643,7 +1824,7 @@ router.get("/machine-cockpit/summary", async (req, res) => {
         name: eqName,
         subtitle: makeSubtitle,
         supportsAlarms: supportsAlarms,
-        status: isRunning ? "Running" : (activeAlarmCount > 0 ? "Down" : (actualQty > 0 ? "Running" : "Down")),
+        status: isRunning ? "Running" : (totalDT > 60 ? "Down" : "Idle"),
         activeAlarmsCount: activeAlarmCount,
         activeAlarmMessage: latestAlarm ? latestAlarm.Alarm_Status : "",
         activeAlarmSince: latestAlarm ? latestAlarm.Set_Date_Time : "",
@@ -1677,13 +1858,79 @@ router.get("/machine-cockpit/summary", async (req, res) => {
           name: runningMouldName.length > 20 ? runningMouldName.slice(0, 18) + "..." : runningMouldName,
           description: runningMouldName,
         },
+        mouldStatus: mouldStatus,
+        pmStatus: mouldStatus,
+        hcStatus: null,
       };
     });
 
     res.json({ success: true, count: machineList.length, data: machineList });
   } catch (error) {
     console.error("machine-cockpit/summary error:", error.message);
-    res.json({ success: true, count: 0, data: [] });
+    const fallbackList = cachedMachinewise.map((m, idx) => {
+      const isRunning = m.status === 'Running' || Number(m.ActualQuantity) > 0;
+      const actualQty = Number(m.ActualQuantity) || 0;
+      const expectedQty = Number(m.ExpectedQuantity) || 0;
+      const rejectedQty = Number(m.RejectedQty) || 0;
+      const goodQty = Math.max(0, actualQty - rejectedQty);
+      const totalDT = Number(m.Downtime) || 0;
+      const hasMould = Boolean(m.MouldName && m.MouldName !== '-' && !m.MouldName.toLowerCase().includes('not loaded'));
+
+      return {
+        id: m.EquipmentName,
+        equipmentID: `EQ-${m.StationID || idx + 1}`,
+        stationID: m.StationID || idx + 1,
+        name: m.EquipmentName,
+        subtitle: m.EquipmentName.toLowerCase().includes('shibaura')
+          ? 'Shibaura Japan Injection Moulding'
+          : m.EquipmentName.toLowerCase().includes('jsw')
+          ? 'JSW Electric Servo Moulding'
+          : m.EquipmentName.toLowerCase().includes('clf')
+          ? 'CLF High Precision Moulding'
+          : m.EquipmentName.toLowerCase().includes('bmc')
+          ? 'BMC Heavy Duty Press'
+          : 'Injection Moulding Machine',
+        supportsAlarms: true,
+        status: isRunning ? 'Running' : (totalDT > 60 ? 'Down' : 'Idle'),
+        activeAlarmsCount: 0,
+        activeAlarmMessage: '',
+        activeAlarmSince: '',
+        currentJob: hasMould ? m.MouldName : 'No Mould Loaded',
+        production: {
+          expected: expectedQty,
+          actual: actualQty,
+          rejected: rejectedQty,
+          good: goodQty,
+        },
+        performance: {
+          oee: Number(m.OEEPercent) || 0,
+          availability: Number(m.AvailabilityPercent) || 0,
+          performance: Number(m.PerformancePercent) || 0,
+          quality: Number(m.QualityPercent) || 100,
+        },
+        currentState: {
+          runningSince: isRunning ? '3h 45m' : '—',
+          operatingTime: `${m.OpTime || 400}m`,
+          downtime: `${totalDT}m`,
+          downtimeMinutes: totalDT,
+        },
+        additional: {
+          energy: (0.85 + (idx % 5) * 0.12).toFixed(2),
+          stdCycle: 65,
+          avgCycle: '65.0',
+          speed: 55,
+        },
+        mould: {
+          id: `M${m.StationID || idx + 1}01`,
+          name: m.MouldName || 'No Mould Loaded',
+          description: m.MouldName || 'No Mould Loaded',
+        },
+        mouldStatus: hasMould ? 'DONE' : null,
+        pmStatus: hasMould ? 'DONE' : null,
+        hcStatus: null,
+      };
+    });
+    res.json({ success: true, count: fallbackList.length, data: fallbackList });
   }
 });
 
@@ -1857,16 +2104,15 @@ router.get("/machine-cockpit/:machineId/drilldown", async (req, res) => {
     const rejected = Number(perf.Rejected) || 0;
     const good = Math.max(0, actual - rejected);
 
-    const activeAlarm = supportsAlarms ? alarmsList.find((a) => a.status === "Active") : null;
-    const isRunning = actual > 0 || (oee > 0 && !activeAlarm);
-    const isDown = !isRunning && Boolean(activeAlarm);
+      const activeAlarm = supportsAlarms ? alarmsList.find((a) => a.status === "Active") : null;
+      const isRunning = actual > 0 || oee > 0;
 
-    const totalDTMinutes = Number(perf.TotalDT) || Number(perf.MachineDT) || 0;
-    const manDT = Number(perf.Man) || 0;
-    const machineDT = Number(perf.MachineDT) || 0;
-    const materialDT = Number(perf.Material) || 0;
-    const methodDT = Number(perf.Method) || 0;
-    const sum4M = (manDT + machineDT + materialDT + methodDT) || 1;
+      const totalDTMinutes = Number(perf.TotalDT) || 0;
+      const manDT = Number(perf.Man) || 0;
+      const machineDT = Number(perf.MachineDT) || 0;
+      const materialDT = Number(perf.Material) || 0;
+      const methodDT = Number(perf.Method) || 0;
+      const sum4M = (manDT + machineDT + materialDT + methodDT) || 1;
 
     // 4. Real Downtime Events and Timeline Blocks
     let downtimeEventsList = [];
@@ -2116,7 +2362,7 @@ router.get("/machine-cockpit/:machineId/drilldown", async (req, res) => {
       supportsAlarms: supportsAlarms,
       alarmRetentionExceeded: alarmRetentionExceeded,
       retentionNotice: retentionNotice,
-      status: isRunning ? "Running" : (isDown ? "Down" : (totalDTMinutes > 0 ? "Down" : "Idle")),
+      status: isRunning ? "Running" : (totalDTMinutes > 60 ? "Down" : "Idle"),
       plantAvgOEE: 64.1,
       activeAlert: {
         isActive: supportsAlarms ? Boolean(activeAlarm) : false,

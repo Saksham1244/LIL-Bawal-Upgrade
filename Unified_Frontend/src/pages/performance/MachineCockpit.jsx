@@ -51,8 +51,8 @@ export default function MachineCockpit() {
     return machines.filter((m) => {
       const matchStatus =
         statusFilter === "ALL" ||
-        (statusFilter === "RUNNING" && m.status.toLowerCase() === "running") ||
-        (statusFilter === "DOWN" && m.status.toLowerCase() === "down");
+        (statusFilter === "RUNNING" && (m.status || "").toLowerCase() === "running") ||
+        (statusFilter === "DOWN" && (m.status || "").toLowerCase() === "down");
 
       const matchQuery =
         !q ||
@@ -66,14 +66,28 @@ export default function MachineCockpit() {
     });
   }, [machines, statusFilter, searchQuery]);
 
-  const runningCount = machines.filter((m) => m.status.toLowerCase() === "running").length;
-  const downCount = machines.filter((m) => m.status.toLowerCase() === "down").length;
+  const runningCount = machines.filter((m) => (m.status || "").toLowerCase() === "running").length;
+  const downCount = machines.filter((m) => (m.status || "").toLowerCase() === "down").length;
 
   const getMetricBadgeClass = (val) => {
     const num = Number(val) || 0;
     if (num >= 85) return "bg-emerald-50 text-emerald-700 border border-emerald-200";
     if (num >= 70) return "bg-amber-50 text-amber-700 border border-amber-200";
     return "bg-rose-50 text-rose-700 border border-rose-200";
+  };
+
+  const getMouldBadgeClasses = (mouldStatus) => {
+    const s = String(mouldStatus || "").toUpperCase();
+    if (s === "OVERDUE") return "bg-rose-50 text-rose-700 border-rose-200";
+    if (s === "DUE") return "bg-amber-50 text-amber-700 border-amber-200";
+    return "bg-emerald-50 text-emerald-700 border-emerald-200";
+  };
+
+  const getMouldDotClass = (mouldStatus) => {
+    const s = String(mouldStatus || "").toUpperCase();
+    if (s === "OVERDUE") return "bg-rose-500";
+    if (s === "DUE") return "bg-amber-500";
+    return "bg-emerald-500";
   };
 
   const isMouldLoaded = (mould, currentJob) => {
@@ -220,9 +234,10 @@ export default function MachineCockpit() {
           /* ======================================================================= */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredMachines.map((machine) => {
-              const isRunning = machine.status.toLowerCase() === "running";
+                const isRunning = (machine.status || "").toLowerCase() === "running";
+                const isIdle = (machine.status || "").toLowerCase() === "idle";
 
-              return (
+               return (
                 <div
                   key={machine.id}
                   className={`bg-white rounded-xl border border-slate-200 p-4 shadow-2xs transition-all hover:shadow-md ${getLeftBorderColor(
@@ -243,15 +258,17 @@ export default function MachineCockpit() {
                         className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${
                           isRunning
                             ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                            : isIdle
+                            ? "bg-slate-100 text-slate-600 border-slate-200"
                             : "bg-rose-50 text-rose-700 border-rose-200"
                         }`}
                       >
                         <span
                           className={`w-1.5 h-1.5 rounded-full ${
-                            isRunning ? "bg-emerald-500 animate-pulse" : "bg-rose-500"
+                            isRunning ? "bg-emerald-500 animate-pulse" : isIdle ? "bg-slate-400" : "bg-rose-500"
                           }`}
                         ></span>
-                        <span>{isRunning ? "Running" : "Down"}</span>
+                        <span>{isRunning ? "Running" : isIdle ? "Idle" : "Down"}</span>
                       </span>
 
                       {machine.activeAlarmsCount > 0 && (
@@ -263,8 +280,9 @@ export default function MachineCockpit() {
                   </div>
 
                   {/* MOULD LOADED ROW */}
-                  <div className="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 mt-3 text-xs flex items-center gap-2">
-                    <span className="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider shrink-0">
+                  <div className="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 mt-3 text-xs flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider shrink-0">
                       MOULD LOADED
                     </span>
                     <span
@@ -277,6 +295,17 @@ export default function MachineCockpit() {
                     >
                       {getMouldDisplayName(machine.mould, machine.currentJob)}
                     </span>
+                    </div>
+                    {isMouldLoaded(machine.mould, machine.currentJob) && machine.mouldStatus && (
+                      <span
+                        className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold border shrink-0 ${getMouldBadgeClasses(
+                          machine.mouldStatus
+                        )}`}
+                      >
+                        <span className={`w-1.5 h-1.5 rounded-full ${getMouldDotClass(machine.mouldStatus)}`}></span>
+                        <span>{machine.mouldStatus}</span>
+                      </span>
+                    )}
                   </div>
 
                   {/* PRODUCTION SECTION */}
@@ -445,9 +474,10 @@ export default function MachineCockpit() {
           /* ======================================================================= */
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
             {filteredMachines.map((machine) => {
-              const isRunning = machine.status.toLowerCase() === "running";
+                const isRunning = (machine.status || "").toLowerCase() === "running";
+                const isIdle = (machine.status || "").toLowerCase() === "idle";
 
-              return (
+               return (
                 <div
                   key={machine.id}
                   onClick={() => navigate(`/machine-cockpit/${encodeURIComponent(machine.id)}`)}
@@ -467,15 +497,17 @@ export default function MachineCockpit() {
                         className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${
                           isRunning
                             ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                            : isIdle
+                            ? "bg-slate-100 text-slate-600 border-slate-200"
                             : "bg-rose-50 text-rose-700 border-rose-200"
                         }`}
                       >
                         <span
                           className={`w-1 h-1 rounded-full ${
-                            isRunning ? "bg-emerald-500 animate-pulse" : "bg-rose-500"
+                            isRunning ? "bg-emerald-500 animate-pulse" : isIdle ? "bg-slate-400" : "bg-rose-500"
                           }`}
                         ></span>
-                        <span>{isRunning ? "Running" : "Down"}</span>
+                        <span>{isRunning ? "Running" : isIdle ? "Idle" : "Down"}</span>
                       </span>
                     </div>
 
@@ -517,10 +549,13 @@ export default function MachineCockpit() {
                     <span
                       className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold border truncate max-w-[140px] ${
                         isMouldLoaded(machine.mould, machine.currentJob)
-                          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                          ? getMouldBadgeClasses(machine.mouldStatus)
                           : "bg-slate-100 text-slate-500 border-slate-200"
                       }`}
                     >
+                      {isMouldLoaded(machine.mould, machine.currentJob) && (
+                        <span className={`w-1.5 h-1.5 rounded-full ${getMouldDotClass(machine.mouldStatus)}`}></span>
+                      )}
                       <span>{getMouldDisplayName(machine.mould, machine.currentJob)}</span>
                     </span>
 

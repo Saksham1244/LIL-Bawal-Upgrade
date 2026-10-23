@@ -156,7 +156,9 @@ export default function MachineDrillDown() {
   }
 
   const d = drillData || {};
-  const isDown = d.status?.toLowerCase() === "down";
+  const statusLower = d.status?.toLowerCase();
+  const isRunning = statusLower === "running";
+  const isDown = statusLower === "down";
 
   // Check if this machine is specified to never raise alarms
   const machineName = d.name || machineId || "";
@@ -192,17 +194,19 @@ export default function MachineDrillDown() {
                 </h1>
                 <span
                   className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
-                    isDown
+                    isRunning
+                      ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                      : isDown
                       ? "bg-rose-50 text-rose-700 border-rose-200"
-                      : "bg-emerald-50 text-emerald-700 border-emerald-200"
+                      : "bg-slate-100 text-slate-600 border-slate-200"
                   }`}
                 >
                   <span
                     className={`w-1.5 h-1.5 rounded-full ${
-                      isDown ? "bg-rose-500" : "bg-emerald-500 animate-pulse"
+                      isRunning ? "bg-emerald-500 animate-pulse" : isDown ? "bg-rose-500" : "bg-slate-400"
                     }`}
                   ></span>
-                  <span>{d.status || "Running"}</span>
+                  <span>{d.status || "Idle"}</span>
                 </span>
                 {!supportsAlarms && (
                   <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200">

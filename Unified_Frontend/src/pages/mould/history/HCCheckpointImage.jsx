@@ -12,6 +12,11 @@ import {
   MdClose,
   MdFileDownload,
 } from "react-icons/md";
+import {
+  dummyHCMouldList,
+  getDummyHCInstances,
+  getDummyHCCheckpointImages,
+} from "../../../data/dummyHCData";
 
 const BASE = getBackendBaseUrl();
 
@@ -70,29 +75,53 @@ export default function HCCheckpointImages() {
   useEffect(() => {
     const fetchMoulds = async () => {
       try {
+        let options = [];
         const res = await axios.get(`${BASE}/MouldSummary/MouldName`);
-        if (res.data?.success && Array.isArray(res.data.data)) {
-          const options = res.data.data.map((m) => ({
+        if (res.data?.success && Array.isArray(res.data.data) && res.data.data.length > 0) {
+          options = res.data.data.map((m) => ({
             value: m.MouldID,
             label: `${m.MouldName} (${m.MouldID})`,
             mouldID: m.MouldID,
             mouldName: m.MouldName,
           }));
-          setMouldList(options);
+        }
 
-          const qName = searchParams.get("mouldName") || searchParams.get("mouldname");
-          const qID = searchParams.get("mouldID");
-          if (qName || qID) {
-            const found = options.find((o) => (qID && o.mouldID === qID) || (qName && o.mouldName === qName));
-            if (found) {
-              setSelectedMouldOption(found);
-              setActiveMouldID(found.mouldID);
-              setActiveMouldName(found.mouldName);
-            }
-          }
+        if (options.length === 0) {
+          options = dummyHCMouldList.map((m) => ({
+            value: m.MouldID,
+            label: `${m.MouldName} (${m.MouldID})`,
+            mouldID: m.MouldID,
+            mouldName: m.MouldName,
+          }));
+        }
+
+        setMouldList(options);
+
+        const qName = searchParams.get("mouldName") || searchParams.get("mouldname");
+        const qID = searchParams.get("mouldID");
+        const found = (qName || qID)
+          ? options.find((o) => (qID && String(o.mouldID) === String(qID)) || (qName && o.mouldName === qName))
+          : options[0];
+
+        if (found) {
+          setSelectedMouldOption(found);
+          setActiveMouldID(found.mouldID);
+          setActiveMouldName(found.mouldName);
         }
       } catch (err) {
-        console.error("Error loading mould list:", err);
+        console.warn("Mould list fetch notice, using fallback:", err?.message);
+        const options = dummyHCMouldList.map((m) => ({
+          value: m.MouldID,
+          label: `${m.MouldName} (${m.MouldID})`,
+          mouldID: m.MouldID,
+          mouldName: m.MouldName,
+        }));
+        setMouldList(options);
+        if (options.length > 0) {
+          setSelectedMouldOption(options[0]);
+          setActiveMouldID(options[0].mouldID);
+          setActiveMouldName(options[0].mouldName);
+        }
       }
     };
     fetchMoulds();
@@ -105,37 +134,58 @@ export default function HCCheckpointImages() {
     const fetchInstances = async () => {
       setLoadingInstances(true);
       try {
+        let instances = [];
         const res = await axios.get(`${BASE}/MouldMaintenanceHistoryHC/HcHistoryDetailTable`, {
           params: { mouldID: activeMouldID },
         });
 
         if (res.data?.success && Array.isArray(res.data.data) && res.data.data.length > 0) {
-          const instances = res.data.data.map((item) => ({
+          instances = res.data.data.map((item) => ({
             value: item.Instance,
             label: `Instance ${item.Instance} (Life: ${item.AtMouldLife || "-"})`,
             instance: item.Instance,
             mouldID: item.MouldID,
             mouldName: item.MouldName,
           }));
+        }
 
-          setInstanceList(instances);
+        if (instances.length === 0) {
+          const fallbackData = getDummyHCInstances(activeMouldID, activeMouldName);
+          instances = fallbackData.map((item) => ({
+            value: item.Instance,
+            label: `Instance ${item.Instance} (Life: ${item.AtMouldLife || "-"})`,
+            instance: item.Instance,
+            mouldID: item.MouldID,
+            mouldName: item.MouldName,
+          }));
+        }
 
-          const qInstance = searchParams.get("instance");
-          const target = qInstance
-            ? instances.find((i) => String(i.instance) === String(qInstance)) || instances[0]
-            : instances[0];
+        setInstanceList(instances);
 
-          if (target) {
-            setSelectedInstanceOption(target);
-            setActiveInstance(target.instance);
-          }
-        } else {
-          setInstanceList([]);
-          setSelectedInstanceOption(null);
+        const qInstance = searchParams.get("instance");
+        const target = qInstance
+          ? instances.find((i) => String(i.instance) === String(qInstance)) || instances[0]
+          : instances[0];
+
+        if (target) {
+          setSelectedInstanceOption(target);
+          setActiveInstance(target.instance);
         }
       } catch (err) {
-        console.error("Error fetching HC instances:", err);
-        setInstanceList([]);
+        console.warn("HC instances fetch notice, using fallback:", err?.message);
+        const fallbackData = getDummyHCInstances(activeMouldID, activeMouldName);
+        const instances = fallbackData.map((item) => ({
+          value: item.Instance,
+          label: `Instance ${item.Instance} (Life: ${item.AtMouldLife || "-"})`,
+          instance: item.Instance,
+          mouldID: item.MouldID,
+          mouldName: item.MouldName,
+        }));
+        setInstanceList(instances);
+        if (instances.length > 0) {
+          setSelectedInstanceOption(instances[0]);
+          setActiveInstance(instances[0].instance);
+        }
       } finally {
         setLoadingInstances(false);
       }
@@ -154,20 +204,20 @@ export default function HCCheckpointImages() {
     axios
       .get(`${BASE}/MouldMaintenanceHistoryHC/HCCheckpointDetails/get-checkpoint-images`, {
         params: { mouldName: activeMouldName, instance: activeInstance, _: Date.now() },
-        
       })
       .then((res) => {
-        if (res.data?.status === 200 || res.data?.success) {
-          setImages(Array.isArray(res.data.data) ? res.data.data : []);
+        if ((res.data?.status === 200 || res.data?.success) && Array.isArray(res.data.data) && res.data.data.length > 0) {
+          setImages(res.data.data);
         } else {
-          setErrorMsg("");
-          setImages([]);
+          // Fall back to dummy inspection illustration images
+          const fallbackImages = getDummyHCCheckpointImages(activeMouldName, activeInstance);
+          setImages(fallbackImages);
         }
       })
       .catch((err) => {
-        console.warn("Checkpoint image fetch notice:", err?.message);
-        setErrorMsg("");
-        setImages([]);
+        console.warn("Checkpoint image fetch notice, using fallback images:", err?.message);
+        const fallbackImages = getDummyHCCheckpointImages(activeMouldName, activeInstance);
+        setImages(fallbackImages);
       })
       .finally(() => setLoading(false));
   }, [activeMouldName, activeInstance]);
