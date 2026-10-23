@@ -45,6 +45,20 @@ export default function CompactCockpitWidget({ maxItems = 6, showHeader = true }
     return mould?.description || mould?.name || currentJob;
   };
 
+  const getMouldBadgeClasses = (mouldStatus) => {
+    const s = String(mouldStatus || "").toUpperCase();
+    if (s === "OVERDUE") return "bg-rose-50 text-rose-700 border-rose-200";
+    if (s === "DUE") return "bg-amber-50 text-amber-700 border-amber-200";
+    return "bg-emerald-50 text-emerald-700 border-emerald-200";
+  };
+
+  const getMouldDotClass = (mouldStatus) => {
+    const s = String(mouldStatus || "").toUpperCase();
+    if (s === "OVERDUE") return "bg-rose-500";
+    if (s === "DUE") return "bg-amber-500";
+    return "bg-emerald-500";
+  };
+
   return (
     <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-2xs">
       {showHeader && (
@@ -78,9 +92,10 @@ export default function CompactCockpitWidget({ maxItems = 6, showHeader = true }
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
           {displayList.map((machine) => {
-            const isRunning = machine.status.toLowerCase() === "running";
+const isRunning = machine.status.toLowerCase() === "running";
+             const isIdle = machine.status.toLowerCase() === "idle";
 
-            return (
+             return (
               <div
                 key={machine.id}
                 onClick={() => navigate(`/machine-cockpit/${encodeURIComponent(machine.id)}`)}
@@ -99,15 +114,17 @@ export default function CompactCockpitWidget({ maxItems = 6, showHeader = true }
                       className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${
                         isRunning
                           ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                          : isIdle
+                          ? "bg-slate-100 text-slate-600 border-slate-200"
                           : "bg-rose-50 text-rose-700 border-rose-200"
                       }`}
                     >
                       <span
                         className={`w-1 h-1 rounded-full ${
-                          isRunning ? "bg-emerald-500 animate-pulse" : "bg-rose-500"
+                          isRunning ? "bg-emerald-500 animate-pulse" : isIdle ? "bg-slate-400" : "bg-rose-500"
                         }`}
                       ></span>
-                      <span>{isRunning ? "Running" : "Down"}</span>
+                      <span>{isRunning ? "Running" : isIdle ? "Idle" : "Down"}</span>
                     </span>
                   </div>
 
@@ -149,10 +166,13 @@ export default function CompactCockpitWidget({ maxItems = 6, showHeader = true }
                   <span
                     className={`inline-flex items-center gap-1 px-1.5 py-0.2 rounded-full text-[9px] font-semibold border truncate max-w-[120px] ${
                       isMouldLoaded(machine.mould, machine.currentJob)
-                        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                        ? getMouldBadgeClasses(machine.mouldStatus)
                         : "bg-slate-100 text-slate-500 border-slate-200"
                     }`}
                   >
+                    {isMouldLoaded(machine.mould, machine.currentJob) && (
+                      <span className={`w-1 h-1 rounded-full shrink-0 ${getMouldDotClass(machine.mouldStatus)}`}></span>
+                    )}
                     <span>{getMouldDisplayName(machine.mould, machine.currentJob)}</span>
                   </span>
 

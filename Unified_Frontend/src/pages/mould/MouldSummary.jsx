@@ -3,6 +3,7 @@ import { getBackendBaseUrl } from "../../utils/apiConfig";
 import React, { useState, useEffect } from "react";
 import DashboardLayout from "../../partials/dashboardLayout/DashboardLayout";
 import axios from "axios";
+import { dummyHCOnTimeVsDelayed } from "../../data/dummyHCData";
 
 import {
   BarChart,
@@ -287,10 +288,10 @@ const MouldSummary = () => {
               const groupedPm = groupOnTimeRows(pmRows);
               setPmOnTimeData(groupedPm);
 
-              // Parse HC OnTime API
+              // Parse HC OnTime API (fallback to hardcoded data if empty)
               const hcRows = hcOnRes.data?.data ?? [];
               const groupedHc = groupOnTimeRows(hcRows);
-              setHcOnTimeData(groupedHc);
+              setHcOnTimeData(groupedHc.length > 0 ? groupedHc : dummyHCOnTimeVsDelayed);
 
               // Parse Production History API
               let prodRows = prodRes.data?.data ?? [];

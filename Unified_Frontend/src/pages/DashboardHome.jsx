@@ -279,6 +279,87 @@ export default function DashboardHome() {
     });
   }, [machineTable, selectedLine]);
 
+  const getMachineStatus = (m) => {
+    const raw = (m.MachineStatus || "").toUpperCase();
+    if (raw === "RUNNING" || raw === "IDLE" || raw === "DOWN") return raw;
+    const actual = Number(m.ActualQuantity) || 0;
+    const oee = Number(m.OEEPercent) || 0;
+    const dt = Number(m.Downtime) || 0;
+    if (actual > 0 || oee > 0) return "RUNNING";
+    if (dt > 60) return "DOWN";
+    return "IDLE";
+  };
+
+  const getMouldStatus = (m) => {
+    if (m.MouldStatus) return m.MouldStatus;
+    const mouldRaw = (m.RunningMould || m.MouldName || "").trim();
+    const hasMould =
+      mouldRaw &&
+      mouldRaw !== "-" &&
+      mouldRaw.toLowerCase() !== "null" &&
+      mouldRaw.toLowerCase() !== "mould not loaded" &&
+      mouldRaw.toLowerCase() !== "no mould loaded";
+    if (!hasMould) return null;
+    const norm = (s) => {
+      if (!s) return null;
+      const str = String(s).toUpperCase().trim();
+      if (str.includes("OVERDUE") || str === "3") return "OVERDUE";
+      if (str.includes("DUE") || str === "2" || str === "8") return "DUE";
+      if (str.includes("DONE") || str.includes("NORMAL") || str.includes("COMPLETE") || str === "1" || str === "7") return "DONE";
+      return null;
+    };
+    const p = norm(m.PMStatus);
+    if (p === "OVERDUE") return "OVERDUE";
+    if (p === "DUE") return "DUE";
+    if (p === "DONE") return "DONE";
+    return "DONE";
+  };
+
+  const renderMouldBadge = (mouldName, mouldStatus) => {
+    const raw = (mouldName || "").trim();
+    if (
+      !raw ||
+      raw === "-" ||
+      raw.toLowerCase() === "null" ||
+      raw.toLowerCase() === "mould not loaded" ||
+      raw.toLowerCase() === "no mould loaded"
+    ) {
+      return <span className="text-slate-400 italic font-mono">-</span>;
+    }
+    const s = String(mouldStatus || "DONE").toUpperCase();
+    if (s === "OVERDUE") {
+      return (
+        <span
+          className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/25 max-w-full"
+          title={`${raw} (Overdue)`}
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0"></span>
+          <span className="truncate">{raw}</span>
+        </span>
+      );
+    }
+    if (s === "DUE") {
+      return (
+        <span
+          className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/25 max-w-full"
+          title={`${raw} (Due Soon)`}
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"></span>
+          <span className="truncate">{raw}</span>
+        </span>
+      );
+    }
+    return (
+      <span
+        className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/25 max-w-full"
+        title={`${raw} (Maintained / OK)`}
+      >
+        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
+        <span className="truncate">{raw}</span>
+      </span>
+    );
+  };
+
   // Display metrics tailored for selected machine or plant
   const displayedMetrics = useMemo(() => {
     if (selectedLine !== 'All' && filteredMachines.length > 0) {
@@ -801,20 +882,18 @@ export default function DashboardHome() {
                     const expectedVal = Number(m.ExpectedQuantity || 0);
                     const gap = Math.max(0, expectedVal - actualVal);
                     const oee = Number(m.OEEPercent || 0);
-                    const isRunning = actualVal > 0 || oee > 0;
+                    const machineStatus = getMachineStatus(m);
+                    const isRunning = machineStatus === "RUNNING";
+                    const isDown = machineStatus === "DOWN";
+                    const mouldStatus = getMouldStatus(m);
 
                     return (
                       <tr key={idx} className="hover:bg-slate-50/80 transition-colors">
                         <td className="py-2.5 px-3 font-bold text-slate-900 truncate" title={m.EquipmentName}>
                           {m.EquipmentName}
                         </td>
-                        <td
-                          className={`py-2.5 px-3 font-mono text-[11px] truncate ${
-                            m.MouldName ? 'text-slate-700 font-semibold' : 'text-slate-400 italic'
-                          }`}
-                          title={m.MouldName || 'Mould Not Loaded'}
-                        >
-                          {m.MouldName || 'Mould Not Loaded'}
+                        <td className="py-2.5 px-3" title={m.RunningMould || m.MouldName || 'Mould Not Loaded'}>
+                          {renderMouldBadge(m.RunningMould || m.MouldName, mouldStatus)}
                         </td>
                         <td className="py-2.5 px-3 text-right font-mono text-slate-600">
                           {expectedVal.toLocaleString()}
@@ -837,15 +916,17 @@ export default function DashboardHome() {
                             className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider ${
                               isRunning
                                 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                : isDown
+                                ? 'bg-rose-50 text-rose-700 border border-rose-200'
                                 : 'bg-slate-100 text-slate-600 border border-slate-200'
                             }`}
                           >
                             <span
                               className={`w-1.5 h-1.5 rounded-full mr-1 ${
-                                isRunning ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'
+                                isRunning ? 'bg-emerald-500 animate-pulse' : isDown ? 'bg-rose-500' : 'bg-slate-400'
                               }`}
                             ></span>
-                            {isRunning ? 'Running' : 'Idle'}
+                            {isRunning ? 'Running' : isDown ? 'Down' : 'Idle'}
                           </span>
                         </td>
                       </tr>

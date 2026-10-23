@@ -25,6 +25,14 @@ import {
   MdAccessTime,
   MdTrendingUp,
 } from 'react-icons/md';
+import {
+  dummyHCStatusOverview,
+  dummyHCWeekWisePlan,
+  dummyHCMouldWisePlan,
+  dummyHCNextDueByDate,
+  dummyHCNextDueByShot,
+  dummyHCNext6MonthsPlan,
+} from '../../data/dummyHCData';
 
 // API endpoints
 const BASE = getBackendBaseUrl();
@@ -72,6 +80,7 @@ export default function HCStatus() {
   const [pmStatusRows, setPmStatusRows] = useState([]);
   const [loadingPM, setLoadingPM] = useState(false);
   const [pmError, setPmError] = useState(null);
+  const [isDemoFallback, setIsDemoFallback] = useState(false);
 
   const [weekWisePMPlan, setWeekWisePMPlan] = useState([]);
   const [loadingWeekPlan, setLoadingWeekPlan] = useState(false);
@@ -114,8 +123,12 @@ export default function HCStatus() {
         axios.get(HC_NEXT6_ENDPOINT).catch(() => ({ data: { data: [] } })),
       ]);
 
-      // 1. HC Status rows
-      const pmData = pmRes?.data?.data ?? [];
+      // 1. HC Status rows (Live fallback to dummy if empty)
+      const rawPmData = pmRes?.data?.data ?? [];
+      const hasLivePM = Array.isArray(rawPmData) && rawPmData.length > 0;
+      setIsDemoFallback(!hasLivePM);
+
+      const pmData = hasLivePM ? rawPmData : dummyHCStatusOverview;
       setPmStatusRows(
         pmData.map((r) => {
           let statusStr = 'Normal';
@@ -140,8 +153,9 @@ export default function HCStatus() {
         })
       );
 
-      // 2. Week wise plan
-      const weekData = weekRes?.data?.data ?? [];
+      // 2. Week wise plan histogram (Live fallback to dummy if empty)
+      const rawWeekData = weekRes?.data?.data ?? [];
+      const weekData = Array.isArray(rawWeekData) && rawWeekData.length > 0 ? rawWeekData : dummyHCWeekWisePlan;
       setWeekWisePMPlan(
         weekData.map((r) => ({
           week: String(r.WeekName || '-'),
@@ -150,7 +164,8 @@ export default function HCStatus() {
       );
 
       // 3. Mould wise plan
-      const planData = mouldPlanRes?.data?.data ?? [];
+      const rawPlanData = mouldPlanRes?.data?.data ?? [];
+      const planData = Array.isArray(rawPlanData) && rawPlanData.length > 0 ? rawPlanData : dummyHCMouldWisePlan;
       setPmPlanRows(
         planData.map((r) => ({
           mould: String(r.MouldName || r.MouldID || '-'),
@@ -159,8 +174,9 @@ export default function HCStatus() {
         }))
       );
 
-      // 4. Next PM by Date
-      const nextData = nextPmRes?.data?.data ?? [];
+      // 4. Next HC by Date
+      const rawNextData = nextPmRes?.data?.data ?? [];
+      const nextData = Array.isArray(rawNextData) && rawNextData.length > 0 ? rawNextData : dummyHCNextDueByDate;
       setNextPmRows(
         nextData.map((r) => ({
           mould: String(r.MouldName || r.MouldID || '-'),
@@ -170,7 +186,8 @@ export default function HCStatus() {
       );
 
       // 5. Next HC by Shot Count
-      const shotData = nextShotRes?.data?.data ?? [];
+      const rawShotData = nextShotRes?.data?.data ?? [];
+      const shotData = Array.isArray(rawShotData) && rawShotData.length > 0 ? rawShotData : dummyHCNextDueByShot;
       setPmShotRows(
         shotData.map((r) => ({
           mould: String(r.MouldName || r.MouldID || '-'),
@@ -180,7 +197,8 @@ export default function HCStatus() {
       );
 
       // 6. Next 6 months plan
-      const next6Data = next6Res?.data?.data ?? [];
+      const rawNext6Data = next6Res?.data?.data ?? [];
+      const next6Data = Array.isArray(rawNext6Data) && rawNext6Data.length > 0 ? rawNext6Data : dummyHCNext6MonthsPlan;
       setNext6MonthsPlan(
         next6Data.map((r) => {
           const raw = String(r.Month || '');
@@ -201,8 +219,70 @@ export default function HCStatus() {
         })
       );
     } catch (err) {
-      console.error('Error loading PM status data:', err);
-      setPmError('Unable to connect to HC Status telemetry.');
+      console.warn('Error connecting to HC Status live endpoint, applying isolated fallback:', err?.message);
+      setIsDemoFallback(true);
+      setPmStatusRows(
+        dummyHCStatusOverview.map((r) => {
+          let statusStr = 'Normal';
+          const statusCode = r.MouldHCStatus;
+          if (statusCode === 3) statusStr = 'Overdue';
+          else if (statusCode === 2) statusStr = 'Due Soon';
+          else if (statusCode === 7) statusStr = 'Completed';
+          const nextDate = formatDate(r.NextHCDueDate);
+          return {
+            mould: String(r.MouldName || r.MouldID || '-'),
+            mouldID: String(r.MouldID || '-'),
+            status: statusStr,
+            statusCode: statusCode,
+            nextPMDueDate: nextDate,
+            shotCount: Number(r.HealthCheckDue || 0),
+            delayDays: calculateDelayDays(nextDate, statusStr, statusCode),
+          };
+        })
+      );
+      setWeekWisePMPlan(
+        dummyHCWeekWisePlan.map((r) => ({
+          week: String(r.WeekName || '-'),
+          plan: Number(r.HCPlanCount || 0),
+        }))
+      );
+      setPmPlanRows(
+        dummyHCMouldWisePlan.map((r) => ({
+          mould: String(r.MouldName || r.MouldID || '-'),
+          mouldID: String(r.MouldID || '-'),
+          planDate: formatDate(r.PlanDate),
+        }))
+      );
+      setNextPmRows(
+        dummyHCNextDueByDate.map((r) => ({
+          mould: String(r.MouldName || r.MouldID || '-'),
+          mouldID: String(r.MouldID || '-'),
+          nextPMDate: formatDate(r.NextHCDueDate),
+        }))
+      );
+      setPmShotRows(
+        dummyHCNextDueByShot.map((r) => ({
+          mould: String(r.MouldName || r.MouldID || '-'),
+          mouldID: String(r.MouldID || '-'),
+          shotCount: Number(r.HealthCheckDue || 0),
+        }))
+      );
+      setNext6MonthsPlan(
+        dummyHCNext6MonthsPlan.map((r) => {
+          const raw = String(r.Month || '');
+          let monthLabel = raw;
+          const parts = raw.split('-');
+          if (parts.length === 2) {
+            const y = Number(parts[0]);
+            const m = Number(parts[1]);
+            const dt = new Date(y, m - 1, 1);
+            if (!isNaN(dt.getTime())) {
+              monthLabel = dt.toLocaleString('default', { month: 'short' });
+            }
+          }
+          return { month: monthLabel, count: Number(r.MouldsDueForHC || 0) };
+        })
+      );
     } finally {
       setLoadingPM(false);
       setLoadingWeekPlan(false);
@@ -401,9 +481,20 @@ export default function HCStatus() {
               <MdHealing size={22} />
             </div>
             <div>
-              <h1 className="text-base font-black text-slate-800 tracking-tight leading-tight">
-                Health Checks (HC)
-              </h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-base font-black text-slate-800 tracking-tight leading-tight">
+                  Health Checks (HC)
+                </h1>
+                {isDemoFallback && (
+                  <span
+                    className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200"
+                    title="Currently active with isolated benchmark data as customer telemetry is pending"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                    Benchmark Data Active
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
